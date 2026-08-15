@@ -1,0 +1,22 @@
+{
+  "name": "Reef Log — Saltwater Aquarium Tracker",
+  "short_name": "Reef Log",
+  "description": "Log and chart water parameters, livestock and expenses for a saltwater aquarium.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0e2a3d",
+  "theme_color": "#0e2a3d",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Log a test", "url": "./index.html#/parameters?log=1" },
+    { "name": "Livestock", "url": "./index.html#/livestock" },
+    { "name": "Expenses", "url": "./index.html#/expenses" }
+  ]
+}

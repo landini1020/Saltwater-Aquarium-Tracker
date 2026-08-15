@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Reef Log">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#4fd0f5"/>
+      <stop offset="0.55" stop-color="#1786c4"/>
+      <stop offset="1" stop-color="#07496e"/>
+    </linearGradient>
+    <clipPath id="round">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#round)">
+    <rect width="512" height="512" fill="url(#sea)"/>
+
+    <!-- water surface -->
+    <path d="M-20 150 Q 70 112 160 150 T 340 150 T 532 150 L 532 -20 L -20 -20 Z"
+          fill="#ffffff" opacity="0.14"/>
+    <path d="M-20 150 Q 70 112 160 150 T 340 150 T 532 150"
+          fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" opacity="0.55"/>
+
+    <!-- trend line: the log itself -->
+    <polyline points="86,368 158,300 230,332 302,232 374,268 430,196"
+              fill="none" stroke="#ffffff" stroke-width="22"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="86" cy="368" r="15" fill="#ffffff"/>
+    <circle cx="230" cy="332" r="15" fill="#ffffff"/>
+    <circle cx="302" cy="232" r="15" fill="#ffffff"/>
+    <circle cx="430" cy="196" r="18" fill="#ffffff"/>
+  </g>
+</svg>

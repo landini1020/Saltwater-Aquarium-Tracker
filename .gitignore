@@ -1,0 +1,16 @@
+# OS / editor cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Local Claude Code state
+.claude/worktrees/
+
+# Local data backups exported from the app
+backups/
+*.reeflog.json
