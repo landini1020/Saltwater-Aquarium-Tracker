@@ -67,11 +67,12 @@ quantity, source store, price, and status (in tank / deceased / sold / moved). T
 shows how long each has been in the tank, counted live. Entering a price when adding
 livestock optionally files the matching expense for you.
 
-#### Existing log (`data/jacobs-tank-import.json`)
+#### The starting log (`js/seed-data.js`)
 
-The tank's history to date — 34 entries, 68 individual animals — transcribed from
-Aquarimate. Load it with **Settings → Import backup**, which replaces everything
-currently in the browser, so import it *before* logging anything new.
+The app ships with the tank's existing history — 34 entries, 68 individual animals,
+transcribed from Aquarimate. It installs itself the first time the app runs in a
+browser, so opening the site on a new phone or laptop shows the full log immediately
+with nothing to import.
 
 Fourteen of the entries have a purchase price recorded ($865 total); the other twenty
 were captured without one and have their price and store left blank rather than guessed.
@@ -82,6 +83,14 @@ to **Discover Aquatics** so the spend-by-store breakdown groups it as one place.
 Acquisition dates were derived from the list-view ages, which are relative to
 2025-12-13; that reference date was confirmed against every entry whose detail page was
 also captured.
+
+Two guards keep it from ever trampling real data. It installs only when the database
+holds no readings, livestock **or** expenses, and only when the stored `seedVersion` is
+older than the file's — so entries you delete stay deleted instead of returning on the
+next reload. Editing the starter entries in the app is safe; they are ordinary records
+once installed. To revise the shipped log itself, edit `js/seed-data.js` and bump
+`SEED_VERSION`, which lets the new version land in a browser still holding the untouched
+original.
 
 ### Expenses
 
@@ -95,10 +104,12 @@ monthly spend chart, and breakdowns showing where the money actually goes.
 In your browser's IndexedDB, on the device you entered it on. Nothing is uploaded
 anywhere — there is no server and no account.
 
-The practical consequence: **your phone and your desktop keep separate logs.** To move
-data between them, use **Settings → Export backup** to download a JSON file, then
-**Import backup** on the other device. Export is also your only backup, so do it
-periodically — clearing your browser's site data will erase the log.
+The practical consequence: **your phone and your desktop keep separate logs.** The
+starting log ships with the app so it appears on every device by itself, but anything
+logged *afterwards* stays on the device it was entered on. To move that across, use
+**Settings → Export backup** to download a JSON file, then **Import backup** on the
+other device. Export is also your only backup, so do it periodically — clearing your
+browser's site data will erase everything you have logged.
 
 If you later want the two devices to sync live, the storage layer is isolated behind
 `js/store.js`; a hosted backend can be added there without touching the views.
@@ -141,6 +152,7 @@ js/
   app.js                 boot, hash router, chrome
   db.js                  IndexedDB wrapper
   store.js               in-memory domain store, seeding, export/import
+  seed-data.js           the tank's existing log, installed on first run
   params.js              parameter definitions, units, range evaluation
   charts.js              SVG line/bar charts and sparklines
   ui.js                  formatting, modals, toasts, escaping

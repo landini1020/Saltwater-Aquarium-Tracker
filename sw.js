@@ -3,7 +3,7 @@
    stale-while-revalidate so updates land on the next visit.
    All user data lives in IndexedDB and is never touched here. */
 
-const CACHE = 'reef-log-v1';
+const CACHE = 'reef-log-v2';
 
 const SHELL = [
   './',
@@ -13,6 +13,7 @@ const SHELL = [
   './js/app.js',
   './js/db.js',
   './js/store.js',
+  './js/seed-data.js',
   './js/params.js',
   './js/charts.js',
   './js/ui.js',

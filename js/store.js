@@ -7,6 +7,7 @@
 
 import * as db from './db.js';
 import { DEFAULT_PARAMETERS } from './params.js';
+import { SEED_VERSION, STARTER_TANK, STARTER_LIVESTOCK, STARTER_EXPENSES } from './seed-data.js';
 
 /* --- Domain constants ----------------------------------------------------- */
 
@@ -42,6 +43,7 @@ const DEFAULT_SETTINGS = {
   theme: 'system',
   currency: 'USD',
   displayUnits: { salinity: 'sg', temperature: 'f' },
+  seedVersion: 0,
 };
 
 /* --- State ---------------------------------------------------------------- */
@@ -113,6 +115,33 @@ export async function init() {
 async function seed() {
   const writes = [];
 
+  // Install the existing tank log the first time the app runs in a browser.
+  // Guarded on there being no readings, livestock or expenses at all, so it can
+  // never overwrite anything actually logged; and on seedVersion, so it does not
+  // reappear after the starter entries have been deliberately deleted.
+  const hasUserData = state.readings.length > 0 || state.livestock.length > 0 || state.expenses.length > 0;
+  const alreadySeeded = (state.settings.seedVersion || 0) >= SEED_VERSION;
+
+  if (!hasUserData && !alreadySeeded) {
+    // Any tank present at this point holds no records — typically the empty
+    // placeholder from an earlier visit — so replacing it loses nothing.
+    const stale = state.tanks.map((t) => t.id).filter((id) => id !== STARTER_TANK.id);
+    if (stale.length) writes.push(db.removeMany('tanks', stale));
+
+    state.tanks = [structuredClone(STARTER_TANK)];
+    state.livestock = STARTER_LIVESTOCK.map((l) => structuredClone(l));
+    state.expenses = STARTER_EXPENSES.map((e) => structuredClone(e));
+
+    writes.push(db.put('tanks', state.tanks[0]));
+    writes.push(db.putMany('livestock', state.livestock));
+    writes.push(db.putMany('expenses', state.expenses));
+
+    state.settings.activeTankId = STARTER_TANK.id;
+    state.settings.seedVersion = SEED_VERSION;
+  }
+
+  // Fallback: the starter log has been installed before and every tank has since
+  // been deleted, so give the app something to attach records to.
   if (!state.tanks.length) {
     const tank = {
       id: uid(),
