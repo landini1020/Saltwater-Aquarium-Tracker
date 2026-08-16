@@ -6,14 +6,18 @@ import { $, $$, esc, toast } from './ui.js';
 
 import * as dashboard from './views/dashboard.js';
 import * as parameters from './views/parameters.js';
+import * as maintenance from './views/maintenance.js';
 import * as livestock from './views/livestock.js';
+import * as gear from './views/gear.js';
 import * as expenses from './views/expenses.js';
 import * as settings from './views/settings.js';
 
 const ROUTES = {
   dashboard: { view: dashboard, title: 'Dashboard' },
   parameters: { view: parameters, title: 'Parameters' },
+  maintenance: { view: maintenance, title: 'Maintenance' },
   livestock: { view: livestock, title: 'Livestock' },
+  gear: { view: gear, title: 'Gear' },
   expenses: { view: expenses, title: 'Expenses' },
   settings: { view: settings, title: 'Settings' },
 };
@@ -110,6 +114,17 @@ function renderChrome() {
     metaEl.textContent = bits.join(' · ');
   }
 
+  // Red pip on the Care tab whenever something is due or overdue.
+  const dot = $('#dueDot');
+  if (dot) {
+    const due = store.tasks().filter((t) => {
+      const s = maintenance.dueInfo(t).state;
+      return s === 'overdue' || s === 'today';
+    }).length;
+    dot.hidden = due === 0;
+    dot.title = due ? `${due} task${due === 1 ? '' : 's'} due` : '';
+  }
+
   const select = $('#tankSelect');
   if (select) {
     const tanks = store.tanks();
@@ -145,12 +160,17 @@ function wireChrome() {
     window.scrollTo(0, 0);
   });
 
-  // The Log Test buttons live in the app chrome, outside any view.
+  // These buttons live in the app chrome, outside any view.
   document.addEventListener('click', (event) => {
     if (event.target.closest('[data-action="log-test"]')) {
       event.preventDefault();
       closeDrawer();
       parameters.openLogTest();
+      return;
+    }
+    if (event.target.closest('[data-action="open-nav"]')) {
+      event.preventDefault();
+      openDrawer();
     }
   });
 

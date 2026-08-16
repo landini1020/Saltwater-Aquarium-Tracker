@@ -77,6 +77,8 @@ on a new phone or laptop shows everything immediately with nothing to import.
 |---|---|
 | Livestock entries | 96 — 34 still in the tank (68 animals), 62 since lost |
 | Expenses | 132, totalling $10,828.75 |
+| Equipment | 25 items · **Supplements** 11 |
+| Maintenance | 13 tasks · 194 logged activities |
 | Tank | 125 gal mixed reef, set up 2023-04-18 |
 
 Sixty-three of the livestock entries have their price and store filled in from a
@@ -94,14 +96,36 @@ date column as boolean `FALSE` rather than dates, so its 153 readings have no us
 timestamps and cannot be charted. The values survived; only the dates were lost.
 Re-exporting that sheet is what it would take to add them.
 
-Two guards keep the log from ever trampling real data. It installs only when the
-database holds no readings, livestock **or** expenses, and only when the stored
-`seedVersion` is older than the file's — so entries you delete stay deleted instead of
-returning on the next reload. Editing the starter entries in the app is safe; they are
-ordinary records once installed. To revise the shipped log, edit `js/seed-data.js` and
-bump `SEED_VERSION`, which lets the new version land in a browser still holding the
-untouched original. The module is imported dynamically, so it is only fetched and parsed
-on a boot that actually needs to seed.
+Seeding is tracked **per collection**, in `settings.seededCollections`. A collection is
+filled only if it has never been seeded and is currently empty, and any collection
+holding data is treated as settled regardless of what was recorded. That means a later
+release can add a whole new section — as Maintenance and Gear were — to a browser that
+already holds the log, without touching what is there, and without a collection you
+empty on purpose being refilled on the next reload.
+
+Editing the starter entries in the app is safe; they are ordinary records once
+installed. To revise the shipped log, edit `js/seed-data.js`; a collection already
+present in a browser will not be replaced, so material changes to existing collections
+are better delivered as a backup file to import. The module is imported dynamically, so
+it is only fetched and parsed on a boot that actually needs to seed.
+
+### Maintenance
+
+Recurring jobs — water changes, filter media, dosing — each with a repeat interval.
+Reef Log works out when each is next due from when it was last done, and sorts anything
+overdue to the top. **Log done** records the job against today and rolls the schedule
+forward; **Skip** records that it was deliberately passed over. Both land in the activity
+history, which is the running record of everything done to the tank.
+
+Tasks on a fixed calendar schedule rather than a day interval keep their description and
+simply have no computed due date. The dashboard leads with whatever is due, and the Care
+tab carries a red pip while anything is outstanding.
+
+### Gear
+
+Equipment with model, quantity and install date, showing how long each piece has been in
+service, and retired items kept for the record. Alongside it, supplements with brand,
+size and their full dosing instructions.
 
 ### Expenses
 
@@ -167,7 +191,8 @@ js/
   params.js              parameter definitions, units, range evaluation
   charts.js              SVG line/bar charts and sparklines
   ui.js                  formatting, modals, toasts, escaping
-  views/                 one module per screen
+  views/                 one module per screen: dashboard, parameters,
+                         maintenance, livestock, gear, expenses, settings
 icons/                   app icons
 ```
 

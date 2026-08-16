@@ -45,7 +45,9 @@
     <ul class="sidenav__list">
       <li><a href="#/dashboard" data-route="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-8 9 8M5 10v10h14V10"/></svg><span>Dashboard</span></a></li>
       <li><a href="#/parameters" data-route="parameters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18M6 19V9M11 19V5M16 19v-7"/></svg><span>Parameters</span></a></li>
+      <li><a href="#/maintenance" data-route="maintenance"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 00-2 2v4M15 3h4a2 2 0 012 2v4M9 21H5a2 2 0 01-2-2v-4M15 21h4a2 2 0 002-2v-4"/><path d="M12 8v4l3 2"/></svg><span>Maintenance</span></a></li>
       <li><a href="#/livestock" data-route="livestock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c4-6 11-6 15 0-4 6-11 6-15 0zM18 12l3-3v6l-3-3z"/></svg><span>Livestock</span></a></li>
+      <li><a href="#/gear" data-route="gear"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M4 17h6"/><circle cx="17" cy="7" r="3"/><circle cx="13" cy="17" r="3"/></svg><span>Gear</span></a></li>
       <li><a href="#/expenses" data-route="expenses"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M16 7H10a3 3 0 000 6h4a3 3 0 010 6H7"/></svg><span>Expenses</span></a></li>
       <li><a href="#/settings" data-route="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14.2 3H9.8l-.4 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2l.4 2.7h4.4l.4-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg><span>Settings</span></a></li>
     </ul>
@@ -61,14 +63,24 @@
 
   <main class="main" id="view" tabindex="-1"></main>
 
+  <!-- Five slots for seven sections: the two most-used plus a drawer opener. -->
   <nav class="tabbar" aria-label="Sections">
     <a href="#/dashboard" data-route="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-8 9 8M5 10v10h14V10"/></svg><span>Home</span></a>
     <a href="#/parameters" data-route="parameters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18M6 19V9M11 19V5M16 19v-7"/></svg><span>Params</span></a>
     <button class="tabbar__fab" data-action="log-test" aria-label="Log a test">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
     </button>
-    <a href="#/livestock" data-route="livestock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c4-6 11-6 15 0-4 6-11 6-15 0zM18 12l3-3v6l-3-3z"/></svg><span>Stock</span></a>
-    <a href="#/expenses" data-route="expenses"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M16 7H10a3 3 0 000 6h4a3 3 0 010 6H7"/></svg><span>Spend</span></a>
+    <a href="#/maintenance" data-route="maintenance">
+      <span class="tabbar__slot">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 00-2 2v4M15 3h4a2 2 0 012 2v4M9 21H5a2 2 0 01-2-2v-4M15 21h4a2 2 0 002-2v-4"/><path d="M12 8v4l3 2"/></svg>
+        <span class="tabbar__dot" id="dueDot" hidden></span>
+      </span>
+      <span>Care</span>
+    </a>
+    <button type="button" data-action="open-nav" aria-label="More sections">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>More</span>
+    </button>
   </nav>
 
 </div>

@@ -47,6 +47,7 @@ const DEFAULT_SETTINGS = {
   currency: 'USD',
   displayUnits: { salinity: 'sg', temperature: 'f' },
   seedVersion: 0,
+  seededCollections: [],
 };
 
 /* --- State ---------------------------------------------------------------- */
@@ -58,6 +59,10 @@ const state = {
   readings: [],
   livestock: [],
   expenses: [],
+  equipment: [],
+  supplements: [],
+  tasks: [],
+  activities: [],
   settings: { ...DEFAULT_SETTINGS },
 };
 
@@ -87,20 +92,29 @@ export function uid() {
 /* --- Boot ----------------------------------------------------------------- */
 
 export async function init() {
-  const [tanks, params, readings, livestock, expenses, meta] = await Promise.all([
-    db.getAll('tanks'),
-    db.getAll('params'),
-    db.getAll('readings'),
-    db.getAll('livestock'),
-    db.getAll('expenses'),
-    db.getAll('meta'),
-  ]);
+  const [tanks, params, readings, livestock, expenses, equipment, supplements, tasks, activities, meta] =
+    await Promise.all([
+      db.getAll('tanks'),
+      db.getAll('params'),
+      db.getAll('readings'),
+      db.getAll('livestock'),
+      db.getAll('expenses'),
+      db.getAll('equipment'),
+      db.getAll('supplements'),
+      db.getAll('tasks'),
+      db.getAll('activities'),
+      db.getAll('meta'),
+    ]);
 
   state.tanks = tanks;
   state.params = params;
   state.readings = readings;
   state.livestock = livestock;
   state.expenses = expenses;
+  state.equipment = equipment;
+  state.supplements = supplements;
+  state.tasks = tasks;
+  state.activities = activities;
 
   const saved = meta.find((m) => m.key === 'settings');
   state.settings = {
@@ -115,37 +129,67 @@ export async function init() {
   return state;
 }
 
+/* Collections the shipped log can populate, and the export name each reads from. */
+const SEEDABLE = [
+  ['tanks', 'STARTER_TANK'],
+  ['livestock', 'STARTER_LIVESTOCK'],
+  ['expenses', 'STARTER_EXPENSES'],
+  ['equipment', 'STARTER_EQUIPMENT'],
+  ['supplements', 'STARTER_SUPPLEMENTS'],
+  ['tasks', 'STARTER_TASKS'],
+  ['activities', 'STARTER_ACTIVITIES'],
+];
+
 async function seed() {
   const writes = [];
 
-  // Install the existing tank log the first time the app runs in a browser.
-  // Guarded on there being no readings, livestock or expenses at all, so it can
-  // never overwrite anything actually logged; and on seedVersion, so it does not
-  // reappear after the starter entries have been deliberately deleted.
-  const hasUserData = state.readings.length > 0 || state.livestock.length > 0 || state.expenses.length > 0;
-  const alreadySeeded = (state.settings.seedVersion || 0) >= SEED_VERSION;
+  // Seeding is tracked per collection rather than by a single version number, so
+  // a later release can add a new section to a browser that already holds the
+  // log without disturbing what is there. A collection is filled only when it
+  // has never been seeded AND is currently empty, which means neither imported
+  // data nor a collection the user emptied on purpose is ever written over.
+  const recorded = state.settings.seededCollections;
+  const done = new Set(Array.isArray(recorded) ? recorded : []);
 
-  if (!hasUserData && !alreadySeeded) {
-    // Loaded on demand: the log is a sizeable module and every boot after the
-    // first has no use for it.
-    const { STARTER_TANK, STARTER_LIVESTOCK, STARTER_EXPENSES } = await import('./seed-data.js');
+  // A collection that already holds anything counts as settled regardless of what
+  // was recorded. That covers installs predating this bookkeeping and data
+  // arrived at by import, and it stops a collection the user later empties from
+  // being treated as never-seeded and refilled.
+  for (const [name] of SEEDABLE) {
+    if (state[name].length > 0) done.add(name);
+  }
 
-    // Any tank present at this point holds no records — typically the empty
-    // placeholder from an earlier visit — so replacing it loses nothing.
-    const stale = state.tanks.map((t) => t.id).filter((id) => id !== STARTER_TANK.id);
-    if (stale.length) writes.push(db.removeMany('tanks', stale));
+  const pending = SEEDABLE.filter(([name]) => !done.has(name));
 
-    state.tanks = [structuredClone(STARTER_TANK)];
-    state.livestock = STARTER_LIVESTOCK.map((l) => structuredClone(l));
-    state.expenses = STARTER_EXPENSES.map((e) => structuredClone(e));
+  if (pending.length) {
+    // Loaded on demand: the log is a sizeable module and a boot with nothing to
+    // seed has no use for it.
+    const data = await import('./seed-data.js');
 
-    writes.push(db.put('tanks', state.tanks[0]));
-    writes.push(db.putMany('livestock', state.livestock));
-    writes.push(db.putMany('expenses', state.expenses));
+    for (const [name, exportName] of pending) {
+      const payload = data[exportName];
+      if (!payload) continue;
 
-    state.settings.activeTankId = STARTER_TANK.id;
+      if (name === 'tanks') {
+        // Any tank present here holds no records — typically the empty
+        // placeholder from an earlier visit — so replacing it loses nothing.
+        const stale = state.tanks.map((t) => t.id).filter((id) => id !== payload.id);
+        if (stale.length) writes.push(db.removeMany('tanks', stale));
+
+        state.tanks = [structuredClone(payload)];
+        writes.push(db.put('tanks', state.tanks[0]));
+        state.settings.activeTankId = payload.id;
+      } else {
+        state[name] = payload.map((row) => structuredClone(row));
+        writes.push(db.putMany(name, state[name]));
+      }
+      done.add(name);
+    }
+
     state.settings.seedVersion = SEED_VERSION;
   }
+
+  state.settings.seededCollections = [...done];
 
   // Fallback: the starter log has been installed before and every tank has since
   // been deleted, so give the app something to attach records to.
@@ -240,6 +284,29 @@ export function expenses(tankId = activeTankId()) {
   return state.expenses.filter((e) => e.tankId === tankId);
 }
 
+export function equipment(tankId = activeTankId()) {
+  return state.equipment.filter((e) => e.tankId === tankId);
+}
+
+export function supplements(tankId = activeTankId()) {
+  return state.supplements.filter((s) => s.tankId === tankId);
+}
+
+export function tasks(tankId = activeTankId()) {
+  return state.tasks.filter((t) => t.tankId === tankId);
+}
+
+/** Activity history, newest first. */
+export function activities(tankId = activeTankId()) {
+  return state.activities
+    .filter((a) => a.tankId === tankId)
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+}
+
+export function activitiesForTask(taskId, tankId = activeTankId()) {
+  return activities(tankId).filter((a) => a.taskId === taskId);
+}
+
 /* --- Mutations ------------------------------------------------------------ */
 
 export async function saveSettings(patch) {
@@ -267,22 +334,17 @@ export async function saveTank(tank) {
 export async function deleteTank(tankId) {
   if (state.tanks.length <= 1) throw new Error('You need at least one tank.');
 
-  const kill = (rows) => rows.filter((r) => r.tankId === tankId).map((r) => r.id);
-  const readingIds = kill(state.readings);
-  const livestockIds = kill(state.livestock);
-  const expenseIds = kill(state.expenses);
+  const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
 
   await Promise.all([
     db.remove('tanks', tankId),
-    db.removeMany('readings', readingIds),
-    db.removeMany('livestock', livestockIds),
-    db.removeMany('expenses', expenseIds),
+    ...owned.map((name) => db.removeMany(name, state[name].filter((r) => r.tankId === tankId).map((r) => r.id))),
   ]);
 
   state.tanks = state.tanks.filter((t) => t.id !== tankId);
-  state.readings = state.readings.filter((r) => r.tankId !== tankId);
-  state.livestock = state.livestock.filter((r) => r.tankId !== tankId);
-  state.expenses = state.expenses.filter((r) => r.tankId !== tankId);
+  for (const name of owned) {
+    state[name] = state[name].filter((r) => r.tankId !== tankId);
+  }
 
   if (state.settings.activeTankId === tankId) {
     await saveSettings({ activeTankId: state.tanks[0].id });
@@ -411,6 +473,84 @@ export async function deleteExpense(id) {
   emit();
 }
 
+/* Equipment, supplements, tasks and activities are plain records with no special
+   handling, so they share one save/delete pair rather than four near-identical
+   copies of the same code. */
+
+function upsert(collection, record) {
+  const row = { ...record };
+  if (!row.tankId) row.tankId = activeTankId();
+
+  if (!row.id) {
+    row.id = uid();
+    row.createdAt = new Date().toISOString();
+    state[collection].push(row);
+  } else {
+    const i = state[collection].findIndex((r) => r.id === row.id);
+    if (i >= 0) state[collection][i] = row; else state[collection].push(row);
+  }
+
+  return db.put(collection, row).then(() => { emit(); return row; });
+}
+
+function drop(collection, id) {
+  return db.remove(collection, id).then(() => {
+    state[collection] = state[collection].filter((r) => r.id !== id);
+    emit();
+  });
+}
+
+export const saveEquipment = (record) => upsert('equipment', record);
+export const deleteEquipment = (id) => drop('equipment', id);
+
+export const saveSupplement = (record) => upsert('supplements', record);
+export const deleteSupplement = (id) => drop('supplements', id);
+
+export const saveTask = (record) => upsert('tasks', record);
+export const saveActivity = (record) => upsert('activities', record);
+export const deleteActivity = (id) => drop('activities', id);
+
+/** Deleting a task leaves its activity history in place as a record of the work. */
+export async function deleteTask(id) {
+  const orphans = state.activities.filter((a) => a.taskId === id);
+  if (orphans.length) {
+    const detached = orphans.map((a) => ({ ...a, taskId: null }));
+    await db.putMany('activities', detached);
+    for (const row of detached) {
+      const i = state.activities.findIndex((a) => a.id === row.id);
+      if (i >= 0) state.activities[i] = row;
+    }
+  }
+  await drop('tasks', id);
+}
+
+/**
+ * Log a task as done (or deliberately skipped) and roll its last-activity date
+ * forward, which is what the next-due calculation reads.
+ */
+export async function logTaskActivity(taskId, { action = 'Performed', date, notes = '' } = {}) {
+  const task = state.tasks.find((t) => t.id === taskId);
+  if (!task) throw new Error('That task no longer exists.');
+
+  const when = date || todayISO();
+
+  await upsert('activities', {
+    taskId,
+    taskName: task.name,
+    action,
+    date: when,
+    notes,
+  });
+
+  // Only move the clock forward — back-filling an older entry should not make a
+  // task look more recently done than it is.
+  if (!task.lastActivity || when > task.lastActivity) {
+    await upsert('tasks', { ...task, lastActivity: when });
+  }
+
+  return when;
+}
+
 /** Every store name a store has ever seen, for the store/vendor autocomplete. */
 export function knownStores() {
   const names = new Set();
@@ -434,6 +574,10 @@ export function exportData() {
       readings: state.readings.length,
       livestock: state.livestock.length,
       expenses: state.expenses.length,
+      equipment: state.equipment.length,
+      supplements: state.supplements.length,
+      tasks: state.tasks.length,
+      activities: state.activities.length,
     },
     data: {
       tanks: state.tanks,
@@ -441,6 +585,10 @@ export function exportData() {
       readings: state.readings,
       livestock: state.livestock,
       expenses: state.expenses,
+      equipment: state.equipment,
+      supplements: state.supplements,
+      tasks: state.tasks,
+      activities: state.activities,
       meta: [state.settings],
     },
   };
@@ -474,6 +622,10 @@ export async function importData(payload) {
     readings: d.readings || [],
     livestock: d.livestock || [],
     expenses: d.expenses || [],
+    equipment: d.equipment || [],
+    supplements: d.supplements || [],
+    tasks: d.tasks || [],
+    activities: d.activities || [],
     meta: d.meta || [],
   });
 
@@ -489,7 +641,11 @@ export async function resetAll() {
   state.readings = [];
   state.livestock = [];
   state.expenses = [];
-  state.settings = { ...DEFAULT_SETTINGS };
+  state.equipment = [];
+  state.supplements = [];
+  state.tasks = [];
+  state.activities = [];
+  state.settings = { ...DEFAULT_SETTINGS, seededCollections: [] };
   await seed();
   emit();
 }

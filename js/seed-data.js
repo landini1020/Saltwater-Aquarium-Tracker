@@ -5,10 +5,13 @@
 
    96 livestock entries (34 still in the tank, 68 animals)
    132 expenses totalling $10,828.75
+   25 pieces of equipment, 11 supplements
+   13 maintenance tasks and 194 logged activities
 
    Water test readings are NOT here. The workbook's Parameters sheet exported
    its date column as boolean FALSE, so its 153 readings have no usable
-   timestamps and would not chart. Re-export that sheet to add them.
+   timestamps and would not chart. Those readings are not recoverable from this
+   file; parameter logging starts fresh in the app.
 
    The shop is spelled a dozen ways in the source ("Discover Aquatics Shop",
    "Doscover Aquatic", "Dicover Aquatics Shop"...) and is normalised to
@@ -21,7 +24,7 @@
 
    Generated file - edit the tank in the app rather than editing this by hand. */
 
-export const SEED_VERSION = 2;
+export const SEED_VERSION = 3;
 
 export const STARTER_TANK =
 {
@@ -3028,6 +3031,2604 @@ export const STARTER_EXPENSES =
         "store":  "",
         "amount":  60,
         "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    }
+];
+
+export const STARTER_EQUIPMENT =
+[
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000001",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Aquatop 9W UV Light",
+        "model":  "",
+        "quantity":  1,
+        "installedDate":  "2023-07-04",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000002",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Aqueon 125 Gallon Tank",
+        "model":  "125 Gallon Tank",
+        "quantity":  1,
+        "installedDate":  "2023-09-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000003",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Circulation Pump",
+        "model":  "Aqua Illumination Nero 5",
+        "quantity":  1,
+        "installedDate":  "2023-04-18",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000004",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fluval Advanced Heater (200 watt)",
+        "model":  "E200 Electronic Heater, 200W, up to 65 US Gal / 250 L",
+        "quantity":  2,
+        "installedDate":  "2023-04-25",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000005",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fluval Advanced Heater (300 watt)",
+        "model":  "E300 Electronic Heater, 300W, up to 100 US Gal",
+        "quantity":  1,
+        "installedDate":  "2023-11-03",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000006",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fluval Filter - 407",
+        "model":  "Fluval 407 Canister",
+        "quantity":  1,
+        "installedDate":  "2023-04-18",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000007",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fluval Filter - FX6",
+        "model":  "Fluval FX6 Canister Filter",
+        "quantity":  1,
+        "installedDate":  "2023-12-25",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000008",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fluval UV light FX",
+        "model":  "FX UVC In-Line Clarifier",
+        "quantity":  1,
+        "installedDate":  "2023-12-25",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000009",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Hanna HI772 Saltwater Aquarium Alkalinity (dKH) Checker",
+        "model":  "Hanna Instruments",
+        "quantity":  1,
+        "installedDate":  "2023-08-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000010",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Hanna Instruments HI713 Checker Phosphate Low Range",
+        "model":  "Hanna Instruments",
+        "quantity":  1,
+        "installedDate":  "2023-08-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000011",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Hanna Instruments HI782 Marine Nitrate High Range Checker",
+        "model":  "Hanna Instruments",
+        "quantity":  1,
+        "installedDate":  "2023-08-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000012",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Hanna Instruments HI98319 Marine Salinity Tester",
+        "model":  "Hanna Instruments",
+        "quantity":  1,
+        "installedDate":  "2023-09-28",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000013",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "IceCap Coral Feeder",
+        "model":  "IceCap",
+        "quantity":  1,
+        "installedDate":  "2023-10-06",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000014",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "LED Light",
+        "model":  "Aqua Illumination 48” Coral Blade Grow",
+        "quantity":  1,
+        "installedDate":  "2023-04-18",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000015",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "LED Light",
+        "model":  "Aqua Illumination 24” Coral Blade Grow",
+        "quantity":  1,
+        "installedDate":  "2023-09-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000016",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "RED SEA REEFWAVE 25",
+        "model":  "Red Sea Pumps",
+        "quantity":  1,
+        "installedDate":  "2023-08-10",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000017",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef-Spec Carbon",
+        "model":  "Red Sea",
+        "quantity":  1,
+        "installedDate":  "2024-01-17",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000018",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea ReefDose Dosing Pumps",
+        "model":  "Red Sea Pumps",
+        "quantity":  1,
+        "installedDate":  "2023-06-11",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000019",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea ReefLED 90W WIFI Reef Spec LED",
+        "model":  "Red Sea Lighting",
+        "quantity":  3,
+        "installedDate":  "2024-02-17",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000020",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Reef Breeders Prism ATO",
+        "model":  "Reef Breeders",
+        "quantity":  1,
+        "installedDate":  "2023-05-23",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000021",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Reef Octopus Classic 100 Hang On The Back Skimmer",
+        "model":  "Reef Octopus",
+        "quantity":  1,
+        "installedDate":  "2023-07-18",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000022",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Reef Octopus Classic 2000 Hang On The Back Protein Skimmer",
+        "model":  "Reef Octopus",
+        "quantity":  1,
+        "installedDate":  "2024-01-02",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000023",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "ReefLED RL90 Black Pendant Hanging Kit for 61 - 72 Inch Long Tanks - Red Sea",
+        "model":  "Red Sea Lighting",
+        "quantity":  1,
+        "installedDate":  "2024-02-17",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000024",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Rodi System",
+        "model":  "Bulk Reef Supply 200gpd",
+        "quantity":  1,
+        "installedDate":  "2024-02-10",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0003-4000-8000-000000000025",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Tank",
+        "model":  "Aqueon 55 Gallon Tank",
+        "quantity":  1,
+        "installedDate":  "2023-04-18",
+        "status":  "active",
+        "retiredDate":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    }
+];
+
+export const STARTER_SUPPLEMENTS =
+[
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000001",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Brightwell Aquatics MicroBacter7",
+        "brand":  "Brightwell Aquatics",
+        "size":  "250ml",
+        "quantity":  1,
+        "instructions":  "Shake product well before using. Mix appropriate volume of MicrōBacter7 (see below) with 250-ml (~8 fl. oz.) of aquarium water in a clean container prior to addition to aquarium. If using a pipette to dispense MicrōBacter7 below water level of container or aquarium, be sure to thoroughly clean pipette with fresh water prior to placing tube back into MicrōBacter7 bottle; failure to do so will contaminate the product. Best results may be obtained by adding mixture to external biological filtration system (if applicable). Do not add to pump intake port(s). For best results, use within 1-year of purchase date. For best results, use with FaStart-M per the instructions on that label, to provide nutrients to get the bacteria started rapidly.  (Do not use with QuikCycl) The following recommendations are based upon extensive testing and will produce the best results in most aquaria.\n\nMedium- to High-nutrient Systems, or to seed Biological Filtration in new aquaria: To effectively decrease the concentration of available nutrients and waste material in all marine and freshwater aquaria, add 5 ml (1 capful) per 25 US-gallons (94.6 L) [≈4 drops per gallon (3.8 L)] of aquarium water daily for the first two weeks of use; the impact that MicrōBacter7 has on an aquarium is most evident within this period. Turn protein skimming and UV-sterilization off for a period of 4 hours following addition to aquaria. A noticeable difference in water clarity is typically apparent within 30-minutes of dosing. Follow same instructions for new aquarium start-up. Thereafter, switch to “low-nutrient” dosage (below).\n\nStable, Low-nutrient Systems: To maintain a low concentration of available nutrients in all marine and freshwater aquaria, 5 ml (1 capful) of MicrōBacter7 per 50 US-gallons (189.3 L) [≈2 drops per gallon (3.8 L)] of aquarium water no more than once each week; alternately, add 1 ml per 50 US-gallons daily (or 1 ml per 25 US-gallons every other day). Turn protein skimming and UV-sterilization off for a period of 4 hours following addition to aquaria. Dosage may be adjusted according to perceived benefit to aquarium, however it is recommended that the dosage not exceed 1 ml per 25 US-gallons per day. With time, hobbyists may determine that decreasing the dosage and/or dosing frequency by up to 50% sufficiently maintains a low-nutrient environment. During changes in biological filtration or when increasing the aquarium bioload, dose 1 ml per 25 US-gallons daily for one week, then resume “low-nutrient” dosage.",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000002",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Coral Colors ABCD 4 Supplement Pack",
+        "brand":  "Red Sea",
+        "size":  "250ml",
+        "quantity":  4,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000003",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Coral Pro Salt (In store pickup only)",
+        "brand":  "Red Sea",
+        "size":  "175 Gallon",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000004",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea NO3:PO4-X Nitrate \u0026 Phosphate Reducer",
+        "brand":  "Red Sea",
+        "size":  "500ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000005",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Energy AB+ Plus 1000 ml",
+        "brand":  "Red Sea",
+        "size":  "1000ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000006",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Energy AB+ Plus 500 ml",
+        "brand":  "Red Sea",
+        "size":  "500ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000007",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Foundation A (CA/SR)",
+        "brand":  "Red Sea",
+        "size":  "1000ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000008",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Foundation B Alkalinity",
+        "brand":  "Red Sea",
+        "size":  "1000ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000009",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Foundation C (MG)",
+        "brand":  "Red Sea",
+        "size":  "1000ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000010",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Trace Colors A Iodine + 500ml",
+        "brand":  "Red Sea",
+        "size":  "500ml",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0004-4000-8000-000000000011",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Seachem Metroplex",
+        "brand":  "Seachem",
+        "size":  "5g",
+        "quantity":  1,
+        "instructions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    }
+];
+
+export const STARTER_TASKS =
+[
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000001",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Clean Powerhead",
+        "taskType":  "Not Scheduled",
+        "relatedEquipment":  "Circulation Pump",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "",
+        "scheduleText":  "",
+        "intervalDays":  null,
+        "startDate":  "",
+        "lastActivity":  "2024-12-23",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000002",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Replace Filter Media - 5 Stage",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Rodi System",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "",
+        "scheduleText":  "Dynamic: Every 182 Day(s)",
+        "intervalDays":  182,
+        "startDate":  "2024-08-10",
+        "lastActivity":  "2025-03-29",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Energy AB+",
+        "taskType":  "Miscellaneous",
+        "relatedEquipment":  "",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "Refill the Reef Energy AB+ in the Dosing Container",
+        "scheduleText":  "Dynamic: Every 7 Day(s)",
+        "intervalDays":  7,
+        "startDate":  "2024-03-03",
+        "lastActivity":  "2025-04-09",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Every Month",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Fluval Filter - FX6",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "Mechanical Foam_Check \u0026 Clean\nBIOMAX_Rinse\nCarbon Pad_Replace",
+        "scheduleText":  "Dynamic: Every 45 Day(s)",
+        "intervalDays":  45,
+        "startDate":  "2024-01-06",
+        "lastActivity":  "2025-03-04",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Every 3 Months",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Fluval Filter - FX6",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "Magnetic impeller_Check \u0026 Clean\nIntake Stem/Strainer/Hosing_Check \u0026 Clean\nBio-Foam_Check \u0026 Clean",
+        "scheduleText":  "Fixed: every 3 months on the 24th of the month, starting from 2/1/26, forever",
+        "intervalDays":  null,
+        "startDate":  "2024-01-06",
+        "lastActivity":  "2025-03-03",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000006",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Deep Clean",
+        "taskType":  "Not Scheduled",
+        "relatedEquipment":  "Reef Octopus Classic 2000 Hang On The Back Protein Skimmer",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "complete cleaning",
+        "scheduleText":  "",
+        "intervalDays":  null,
+        "startDate":  "",
+        "lastActivity":  "2024-10-19",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000007",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "6 Month Maintenance Schedule",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Fluval Filter - 407",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "Replace Half Quantity Pre-Filter\nReplace Half Quantity BIOMAX\n\nReplace Bio-Foam Max",
+        "scheduleText":  "Dynamic: Every 180 Day(s)",
+        "intervalDays":  180,
+        "startDate":  "2023-10-18",
+        "lastActivity":  "2025-01-05",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "3 Month Maintenance Schedule",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Fluval Filter - 407",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "check and clean Intake Stem/Strainer\nclean and lubricate AquaStop O-ring Gaskets",
+        "scheduleText":  "Dynamic: Every 90 Day(s)",
+        "intervalDays":  90,
+        "startDate":  "2023-07-18",
+        "lastActivity":  "2025-01-05",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000009",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "RED SEA KH",
+        "taskType":  "Not Scheduled",
+        "relatedEquipment":  "",
+        "relatedSupplement":  "Red Sea Reef Foundation B Alkalinity",
+        "amount":  "",
+        "instructions":  "",
+        "scheduleText":  "",
+        "intervalDays":  null,
+        "startDate":  "",
+        "lastActivity":  "",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fish Parasite Treatment",
+        "taskType":  "Not Scheduled",
+        "relatedEquipment":  "",
+        "relatedSupplement":  "Seachem Metroplex",
+        "amount":  "1 scoop",
+        "instructions":  "mix one scoop of metroplex with one scoop of focus and a frozen cube of the fish food",
+        "scheduleText":  "",
+        "intervalDays":  null,
+        "startDate":  "",
+        "lastActivity":  "2023-06-19",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Feed The Anemone",
+        "taskType":  "Not Scheduled",
+        "relatedEquipment":  "",
+        "relatedSupplement":  "PolypLab Reef Roids",
+        "amount":  "",
+        "instructions":  "",
+        "scheduleText":  "",
+        "intervalDays":  null,
+        "startDate":  "",
+        "lastActivity":  "2024-05-05",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Water Change",
+        "taskType":  "Water Change",
+        "relatedEquipment":  "",
+        "relatedSupplement":  "",
+        "amount":  "12 Gallons",
+        "instructions":  "",
+        "scheduleText":  "Dynamic: Every 14 Day(s)",
+        "intervalDays":  14,
+        "startDate":  "2023-05-20",
+        "lastActivity":  "2025-04-13",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Monthly Maintenance Schedule",
+        "taskType":  "Maintenance",
+        "relatedEquipment":  "Fluval Filter - 407",
+        "relatedSupplement":  "",
+        "amount":  "",
+        "instructions":  "Replace Quick Clear Polishing Pad\nReplace Carbon \nReplace Zeo-Carb\nReplace Nitrite Remover (Pad)\nReplace Phosphate Remover (Pad)\nReplace Ammonia Remover (Pad)\n(NEVER REPLACE EVERYTHING)\n\nRinse with aquarium water BIOMAX\n\nCheck And Clean Magnetic Impeller \u0026 Impeller Well\nCheck And Clean Ceramic Shaft",
+        "scheduleText":  "Dynamic: Every 30 Day(s)",
+        "intervalDays":  30,
+        "startDate":  "2023-05-18",
+        "lastActivity":  "2025-03-06",
+        "status":  "active",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    }
+];
+
+export const STARTER_ACTIVITIES =
+[
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000001",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2025-04-13",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000002",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2025-04-09",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000003",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000002",
+        "taskName":  "Replace Filter Media - 5 Stage",
+        "action":  "Performed",
+        "date":  "2025-03-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000004",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Skipped",
+        "date":  "2025-03-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000005",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Skipped",
+        "date":  "2025-03-04",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000006",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2025-03-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000007",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2025-03-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000008",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2025-03-02",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000009",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Skipped",
+        "date":  "2025-02-04",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000010",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2025-01-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000011",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2025-01-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000012",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2025-01-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000013",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2025-01-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000014",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000007",
+        "taskName":  "6 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2025-01-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000015",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2025-01-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000016",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-12-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000017",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-12-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000018",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000001",
+        "taskName":  "Clean Powerhead",
+        "action":  "Performed",
+        "date":  "2024-12-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000019",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-12-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000020",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-12-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000021",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-12-07",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000022",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-11-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000023",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-11-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000024",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-11-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000025",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2024-11-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000026",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-11-02",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000027",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-10-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000028",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000006",
+        "taskName":  "Deep Clean",
+        "action":  "Performed",
+        "date":  "2024-10-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000029",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-10-13",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000030",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-10-01",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000031",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-09-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000032",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-09-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000033",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-09-14",
+        "notes":  "25 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000034",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-09-07",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000035",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-09-07",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000036",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-08-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000037",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-08-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000038",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000002",
+        "taskName":  "Replace Filter Media - 5 Stage",
+        "action":  "Performed",
+        "date":  "2024-08-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000039",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-08-22",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000040",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-08-12",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000041",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-08-10",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000042",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2024-08-10",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000043",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-08-04",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000044",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-08-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000045",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Skipped",
+        "date":  "2024-08-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000046",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-07-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000047",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-07-26",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000048",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-07-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000049",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-07-14",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000050",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-07-14",
+        "notes":  "Replaced Biomax\nReplaced white filter pads\nReplaced quick clear\nReplaced part of bio cubes\nAdded bio cubes in new tray\nAdded pre-filter cubes",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000051",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-07-14",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000052",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000006",
+        "taskName":  "Deep Clean",
+        "action":  "Performed",
+        "date":  "2024-07-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000053",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-07-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000054",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-06-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000055",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-06-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000056",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-06-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000057",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-06-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000058",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-06-08",
+        "notes":  "Replaced clearmax\nReplaced phosphate pad\nReplaced carbon\nReplaced nitrite pad \nReplaced ammonia pad \nReplaced quick clear",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000059",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-06-08",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000060",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-06-04",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000061",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-05-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000062",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-05-25",
+        "notes":  "20 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000063",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-05-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000064",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-05-14",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000065",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-05-12",
+        "notes":  "12 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000066",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-05-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000067",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2024-05-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000068",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-05-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000069",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-05-04",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000070",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-04-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000071",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-04-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000072",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000007",
+        "taskName":  "6 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-04-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000073",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-04-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000074",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-04-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000075",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-04-27",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000076",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-04-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000077",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-04-21",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000078",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-04-14",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000079",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-04-14",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000080",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-04-13",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000081",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-04-07",
+        "notes":  "Krill. Did not Feet the Black Widow because he was shrunk up... will need to wait",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000082",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-04-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000083",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-04-06",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000084",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-03-31",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000085",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-03-30",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000086",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-03-24",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000087",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-03-24",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000088",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-03-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000089",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-03-23",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000090",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-03-17",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000091",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-03-17",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000092",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-03-17",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000093",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-03-10",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000094",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-03-10",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000095",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Performed",
+        "date":  "2024-03-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000096",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-03-03",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000097",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-03-03",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000098",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-03-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000099",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000006",
+        "taskName":  "Deep Clean",
+        "action":  "Performed",
+        "date":  "2024-02-26",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000100",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-02-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000101",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-02-18",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000102",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-02-18",
+        "notes":  "10 Gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000103",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-02-11",
+        "notes":  "12 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000104",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-02-11",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000105",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000003",
+        "taskName":  "Red Sea Reef Energy AB+",
+        "action":  "Skipped",
+        "date":  "2024-02-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000106",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-02-04",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000107",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-02-04",
+        "notes":  "12 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000108",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2024-01-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000109",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-01-28",
+        "notes":  "Krill",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000110",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2024-01-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000111",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-01-28",
+        "notes":  "12 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000112",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-01-20",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000113",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2024-01-20",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000114",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-01-20",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000115",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2024-01-07",
+        "notes":  "10 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000116",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2024-01-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000117",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000005",
+        "taskName":  "Every 3 Months",
+        "action":  "Performed",
+        "date":  "2024-01-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000118",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000004",
+        "taskName":  "Every Month",
+        "action":  "Performed",
+        "date":  "2023-12-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000119",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-12-24",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000120",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-12-24",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000121",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-12-20",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000122",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-12-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000123",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-12-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000124",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000006",
+        "taskName":  "Deep Clean",
+        "action":  "Performed",
+        "date":  "2023-11-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000125",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-11-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000126",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-11-19",
+        "notes":  "Replaced the nitrite, phosphate, and ammonia remover media",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000127",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-11-11",
+        "notes":  "Replaced the carbon and clearmax",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000128",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-10-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000129",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-10-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000130",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-10-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000131",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-10-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000132",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000007",
+        "taskName":  "6 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-10-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000133",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-09-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000134",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-09-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000135",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-09-13",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000136",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-08-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000137",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-08-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000138",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-08-20",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000139",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-08-13",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000140",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-08-12",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000141",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000008",
+        "taskName":  "3 Month Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-07-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000142",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-07-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000143",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-07-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000144",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-07-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000145",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-07-15",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000146",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-07-08",
+        "notes":  "5 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000147",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-07-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000148",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-06-25",
+        "notes":  "3 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000149",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-06-24",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000150",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-06-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000151",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-19",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000152",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-18",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000153",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-06-18",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000154",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-17",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000155",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-16",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000156",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-15",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000157",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-14",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000158",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-13",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000159",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-12",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000160",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-06-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000161",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-11",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000162",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-06-11",
+        "notes":  "5 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000163",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-10",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000164",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-09",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000165",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-06-08",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000166",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-06-08",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000167",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-07",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000168",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-07",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000169",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000170",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-06",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000171",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000172",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-05",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000173",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-06-04",
+        "notes":  "5 gallons",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000174",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-04",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000175",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-06-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000176",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-03",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000177",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-02",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000178",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-06-01",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000179",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-31",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000180",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Skipped",
+        "date":  "2023-05-30",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000181",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-29",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000182",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-28",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000183",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000184",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-05-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000185",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-27",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000186",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-26",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000187",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-25",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000188",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-24",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000189",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-23",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000190",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000011",
+        "taskName":  "Feed The Anemone",
+        "action":  "Performed",
+        "date":  "2023-05-22",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000191",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-22",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000192",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000010",
+        "taskName":  "Fish Parasite Treatment",
+        "action":  "Performed",
+        "date":  "2023-05-21",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000193",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000013",
+        "taskName":  "Monthly Maintenance Schedule",
+        "action":  "Performed",
+        "date":  "2023-05-20",
+        "notes":  "Replaced phosphate remover pad, ammonia remover pad, replaced 3/4 carbon packs, and added nitrite remover pad. Replaced 2 additional carbon filter packs and 2 of the nitrite pads  on 05/29/23",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0006-4000-8000-000000000194",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "taskId":  "a7f3c1e0-0005-4000-8000-000000000012",
+        "taskName":  "Water Change",
+        "action":  "Performed",
+        "date":  "2023-05-20",
+        "notes":  "Changed 8 gallons",
         "createdAt":  "2025-12-13T00:00:00.000Z"
     }
 ];

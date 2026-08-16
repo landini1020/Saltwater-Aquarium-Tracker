@@ -4,9 +4,10 @@ import * as store from '../store.js';
 import * as P from '../params.js';
 import * as charts from '../charts.js';
 import { focusParam } from './parameters.js';
+import { dueInfo } from './maintenance.js';
 import {
   esc, formatRelative, formatDate, formatDuration, daysBetween, monthKey,
-  money, moneyShort, plural, emptyState,
+  money, moneyShort, plural, emptyState, toast,
 } from '../ui.js';
 
 /* A parameter untested for this long gets nudged on the dashboard. */
@@ -57,6 +58,7 @@ export function render(root) {
 
     <div class="stack">
       ${attentionCard(attention, stale)}
+      ${maintenanceCard()}
 
       <section>
         <div class="row" style="margin-bottom:8px">
@@ -103,9 +105,15 @@ export function render(root) {
 
   root.replaceChildren(el);
 
-  el.addEventListener('click', (event) => {
+  el.addEventListener('click', async (event) => {
     const tileBtn = event.target.closest('[data-focus]');
-    if (tileBtn) focusParam(tileBtn.dataset.focus);
+    if (tileBtn) { focusParam(tileBtn.dataset.focus); return; }
+
+    const done = event.target.closest('[data-done]');
+    if (done) {
+      await store.logTaskActivity(done.dataset.done, { action: 'Performed' });
+      toast('Logged for today');
+    }
   });
 }
 
@@ -193,6 +201,58 @@ function attentionCard(attention, stale) {
       </div>
       <div class="card__body" style="padding-top:6px;padding-bottom:10px">
         <ul style="font-size:13.5px">${items.join('')}</ul>
+      </div>
+    </section>`;
+}
+
+/** Tasks that are due, overdue or never logged — the "what do I owe the tank" card. */
+function maintenanceCard() {
+  const rows = store.tasks()
+    .map((task) => ({ task, info: dueInfo(task) }))
+    .filter((r) => ['overdue', 'today', 'never'].includes(r.info.state))
+    .sort((a, b) => (b.info.days || 0) - (a.info.days || 0));
+
+  if (!rows.length) {
+    const scheduled = store.tasks().filter((t) => dueInfo(t).state === 'upcoming');
+    if (!scheduled.length) return '';
+
+    const next = scheduled.sort((a, b) => dueInfo(a).due - dueInfo(b).due)[0];
+    return `
+      <section class="card">
+        <div class="card__head">
+          <h2>Maintenance</h2>
+          <div class="spacer"></div>
+          <a href="#/maintenance" style="font-size:13px;font-weight:600;color:var(--accent)">All tasks →</a>
+        </div>
+        <div class="card__body" style="padding-top:8px">
+          <p style="font-size:13.5px;color:var(--text-soft)">
+            Nothing due. Next up is <b style="color:var(--text)">${esc(next.name)}</b>
+            on ${esc(formatDate(dueInfo(next).due))}.
+          </p>
+        </div>
+      </section>`;
+  }
+
+  const overdue = rows.filter((r) => r.info.state === 'overdue').length;
+
+  return `
+    <section class="card" style="border-left:3px solid var(--${overdue ? 'bad' : 'warn'})">
+      <div class="card__head">
+        <h2>Maintenance due</h2>
+        <div class="spacer"></div>
+        <span class="badge badge--${overdue ? 'bad' : 'warn'}">${rows.length}</span>
+        <a href="#/maintenance" style="font-size:13px;font-weight:600;color:var(--accent)">All tasks →</a>
+      </div>
+      <div class="card__body card__body--flush">
+        <ul>
+          ${rows.slice(0, 5).map(({ task, info }) => `
+            <li style="display:flex;gap:10px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--line)">
+              <span class="dot dot--${info.state === 'overdue' ? 'bad' : 'warn'}"></span>
+              <span style="flex:1;font-size:13.5px">${esc(task.name)}</span>
+              <button class="btn btn--sm" data-done="${esc(task.id)}">Done</button>
+            </li>`).join('')}
+        </ul>
+        ${rows.length > 5 ? `<p class="muted" style="padding:10px 16px;font-size:12.5px">+ ${rows.length - 5} more</p>` : ''}
       </div>
     </section>`;
 }

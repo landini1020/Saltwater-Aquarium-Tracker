@@ -5,7 +5,9 @@
    cloud-sync mode should require. */
 
 const DB_NAME = 'reef-log';
-const DB_VERSION = 1;
+// v2 added equipment, supplements, tasks and activities. The upgrade handler
+// creates whatever is missing, so bumping this is all a new store needs.
+const DB_VERSION = 2;
 
 /** Object store name -> key path. */
 export const STORES = {
@@ -14,6 +16,10 @@ export const STORES = {
   readings: 'id',
   livestock: 'id',
   expenses: 'id',
+  equipment: 'id',
+  supplements: 'id',
+  tasks: 'id',
+  activities: 'id',
   meta: 'key',
 };
 

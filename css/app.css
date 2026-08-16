@@ -289,13 +289,26 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
   backdrop-filter: saturate(160%) blur(10px);
   border-top: 1px solid var(--line);
 }
-.tabbar a {
+.tabbar a,
+.tabbar > button:not(.tabbar__fab) {
   display: grid; justify-items: center; gap: 3px;
   padding: 6px 2px;
   font-size: 10.5px; font-weight: 500; color: var(--text-faint);
+  background: none; border: 0; cursor: pointer;
+  font-family: inherit;
 }
 .tabbar a.is-active { color: var(--accent); }
 .tabbar svg { width: 21px; height: 21px; }
+
+/* Overdue indicator riding on the Care tab icon. */
+.tabbar__slot { position: relative; display: block; line-height: 0; }
+.tabbar__dot {
+  position: absolute; top: -1px; right: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bad);
+  border: 2px solid var(--bg-elev);
+}
 .tabbar__fab {
   justify-self: center;
   display: grid; place-items: center;
@@ -630,6 +643,21 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
   font-size: 17px;
   background: var(--bg-sunk);
 }
+
+/* --- Maintenance tasks ---------------------------------------------------- */
+
+.taskcard { border-left: 3px solid var(--line-strong); }
+.taskcard.is-overdue { border-left-color: var(--bad); }
+.taskcard.is-today   { border-left-color: var(--warn); }
+.taskcard.is-never   { border-left-color: var(--warn); }
+.taskcard.is-upcoming { border-left-color: var(--ok); }
+.taskcard.is-inactive { opacity: .62; }
+.taskcard h3 { line-height: 1.3; }
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: '▸ '; display: inline-block; transition: transform .15s; }
+details[open] > summary::before { content: '▾ '; }
 
 /* --- Bars (expense breakdown) -------------------------------------------- */
 
