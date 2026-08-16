@@ -7,7 +7,10 @@
 
 import * as db from './db.js';
 import { DEFAULT_PARAMETERS } from './params.js';
-import { SEED_VERSION, STARTER_TANK, STARTER_LIVESTOCK, STARTER_EXPENSES } from './seed-data.js';
+
+/* Must match SEED_VERSION in seed-data.js. Kept here as well so a normal boot can
+   decide whether seeding is needed without pulling in the (large) data module. */
+const SEED_VERSION = 2;
 
 /* --- Domain constants ----------------------------------------------------- */
 
@@ -123,6 +126,10 @@ async function seed() {
   const alreadySeeded = (state.settings.seedVersion || 0) >= SEED_VERSION;
 
   if (!hasUserData && !alreadySeeded) {
+    // Loaded on demand: the log is a sizeable module and every boot after the
+    // first has no use for it.
+    const { STARTER_TANK, STARTER_LIVESTOCK, STARTER_EXPENSES } = await import('./seed-data.js');
+
     // Any tank present at this point holds no records — typically the empty
     // placeholder from an earlier visit — so replacing it loses nothing.
     const stale = state.tanks.map((t) => t.id).filter((id) => id !== STARTER_TANK.id);

@@ -69,28 +69,39 @@ livestock optionally files the matching expense for you.
 
 #### The starting log (`js/seed-data.js`)
 
-The app ships with the tank's existing history — 34 entries, 68 individual animals,
-transcribed from Aquarimate. It installs itself the first time the app runs in a
-browser, so opening the site on a new phone or laptop shows the full log immediately
-with nothing to import.
+The app ships with the tank's full history, transcribed from the Aquarimate workbook
+export. It installs itself the first time the app runs in a browser, so opening the site
+on a new phone or laptop shows everything immediately with nothing to import.
 
-Fourteen of the entries have a purchase price recorded ($865 total); the other twenty
-were captured without one and have their price and store left blank rather than guessed.
-The shop is recorded four different ways in the original data ("Discover Aquatics Shop",
-"Discover Aquatics", "Discover Aquatic", "Dicover Aquatics Shop") and has been collapsed
-to **Discover Aquatics** so the spend-by-store breakdown groups it as one place.
+| | |
+|---|---|
+| Livestock entries | 96 — 34 still in the tank (68 animals), 62 since lost |
+| Expenses | 132, totalling $10,828.75 |
+| Tank | 125 gal mixed reef, set up 2023-04-18 |
 
-Acquisition dates were derived from the list-view ages, which are relative to
-2025-12-13; that reference date was confirmed against every entry whose detail page was
-also captured.
+Sixty-three of the livestock entries have their price and store filled in from a
+purchase on the same date in the same category; where the match was ambiguous, those
+fields are left blank rather than guessed.
 
-Two guards keep it from ever trampling real data. It installs only when the database
-holds no readings, livestock **or** expenses, and only when the stored `seedVersion` is
-older than the file's — so entries you delete stay deleted instead of returning on the
-next reload. Editing the starter entries in the app is safe; they are ordinary records
-once installed. To revise the shipped log itself, edit `js/seed-data.js` and bump
-`SEED_VERSION`, which lets the new version land in a browser still holding the untouched
-original.
+The shop is spelled a dozen ways in the source data — "Discover Aquatics Shop",
+"Doscover Aquatic", "Dicover Aquatics Shop", "Discover Aquatics Shoo" and more — and is
+normalised to **Discover Aquatics** so the spend-by-store breakdown groups it as one
+place. Genuinely different vendors (Petco, Amazon, Aquarium Artisans,
+SaltwaterAquarium.com) are left alone.
+
+**Water test readings are not included.** The workbook's Parameters sheet exported its
+date column as boolean `FALSE` rather than dates, so its 153 readings have no usable
+timestamps and cannot be charted. The values survived; only the dates were lost.
+Re-exporting that sheet is what it would take to add them.
+
+Two guards keep the log from ever trampling real data. It installs only when the
+database holds no readings, livestock **or** expenses, and only when the stored
+`seedVersion` is older than the file's — so entries you delete stay deleted instead of
+returning on the next reload. Editing the starter entries in the app is safe; they are
+ordinary records once installed. To revise the shipped log, edit `js/seed-data.js` and
+bump `SEED_VERSION`, which lets the new version land in a browser still holding the
+untouched original. The module is imported dynamically, so it is only fetched and parsed
+on a boot that actually needs to seed.
 
 ### Expenses
 
