@@ -1,7 +1,6 @@
 /* Application shell: boot, hash router, chrome (nav, theme, tank picker). */
 
 import * as store from './store.js';
-import * as sync from './sync.js';
 import * as charts from './charts.js';
 import { $, $$, esc, toast } from './ui.js';
 
@@ -136,30 +135,6 @@ function renderChrome() {
   }
 }
 
-/** Header icon reflecting sync state; hidden entirely until sync is set up. */
-function renderSyncDot(status) {
-  const dot = $('#syncDot');
-  if (!dot) return;
-
-  if (status.state === 'off') { dot.hidden = true; return; }
-
-  dot.hidden = false;
-  dot.classList.toggle('is-syncing', status.state === 'syncing');
-  dot.classList.toggle('is-offline', status.state === 'offline');
-  dot.classList.toggle('is-error', status.state === 'error');
-
-  const label = {
-    'signed-out': 'Sync set up — sign in to start',
-    idle: status.lastSyncAt ? 'Synced' : 'Sync ready',
-    syncing: 'Syncing…',
-    offline: 'Offline — will sync later',
-    error: status.message || 'Sync problem',
-  }[status.state] || 'Sync';
-
-  dot.title = label;
-  dot.setAttribute('aria-label', label);
-}
-
 function openDrawer() {
   $('#sidenav').classList.add('is-open');
   $('#scrim').hidden = false;
@@ -250,9 +225,6 @@ async function boot() {
     renderChrome();
     renderRoute();
   });
-
-  sync.onStatus(renderSyncDot);
-  sync.init().catch((err) => console.warn('Sync unavailable', err));
 
   registerServiceWorker();
 }
