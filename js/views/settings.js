@@ -3,9 +3,10 @@
 import * as store from '../store.js';
 import * as P from '../params.js';
 import * as charts from '../charts.js';
+import { APP_VERSION } from '../version.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  formatDate, todayISO, downloadFile,
+  todayISO, downloadFile,
 } from '../ui.js';
 
 const CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'AUD', 'NZD', 'JPY', 'SEK', 'ZAR'];
@@ -112,10 +113,52 @@ export function render(root) {
           </p>
         </div>
       </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Version</h2></div>
+        <div class="card__body">
+          <div class="row">
+            <div>
+              <div style="font-size:19px;font-weight:680">Reef Log ${esc(APP_VERSION)}</div>
+              <div class="muted" style="font-size:12.5px" id="swState">checking for updates…</div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn" data-act="check-update">Check for update</button>
+          </div>
+          <p class="field__hint" style="margin-top:12px">
+            The app keeps a copy of itself on the device so it works offline, which means a new
+            version can take a launch or two to appear. Use this to fetch it straight away.
+          </p>
+        </div>
+      </section>
     </div>`;
 
   root.replaceChildren(el);
   wire(el, root);
+  describeWorker(el.querySelector('#swState'));
+}
+
+/** Report whether the offline copy is registered, so a stale device is obvious. */
+async function describeWorker(node) {
+  if (!node) return;
+
+  if (!('serviceWorker' in navigator)) {
+    node.textContent = 'Offline copy not supported by this browser.';
+    return;
+  }
+  if (location.hostname === 'localhost' || location.protocol === 'file:') {
+    node.textContent = 'Running locally — offline copy disabled.';
+    return;
+  }
+
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) {
+    node.textContent = 'No offline copy stored yet.';
+    return;
+  }
+  node.textContent = reg.waiting
+    ? 'An update is downloaded and applies on reload.'
+    : 'Up to date — this is the latest version installed.';
 }
 
 function dataSummary() {
@@ -294,6 +337,20 @@ async function handleAction(action, el, root) {
 
     case 'add-param': {
       openParamForm(null);
+      return;
+    }
+
+    case 'check-update': {
+      if (!('serviceWorker' in navigator)) { toast('This browser keeps no offline copy.'); return; }
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) { toast('No offline copy stored yet — reload the page.'); return; }
+      try {
+        await reg.update();
+        toast(reg.waiting || reg.installing ? 'Update found — reload to apply.' : 'You are on the latest version.');
+      } catch {
+        toast('Could not reach the server to check.');
+      }
+      describeWorker(el.querySelector('#swState'));
       return;
     }
 

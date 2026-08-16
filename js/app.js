@@ -229,6 +229,13 @@ async function boot() {
   registerServiceWorker();
 }
 
+function showUpdateBar() {
+  const bar = $('#updateBar');
+  if (!bar || !bar.hidden) return;
+  bar.hidden = false;
+  $('#updateReload').addEventListener('click', () => location.reload(), { once: true });
+}
+
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
 
@@ -237,9 +244,43 @@ function registerServiceWorker() {
   const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '';
   if (isLocal || location.protocol === 'file:') return;
 
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch((err) => {
+  window.addEventListener('load', async () => {
+    let reg;
+    try {
+      reg = await navigator.serviceWorker.register('sw.js');
+    } catch (err) {
       console.warn('Service worker registration failed', err);
+      return;
+    }
+
+    // A worker already waiting means an update landed on an earlier visit and
+    // the page is still running the old code.
+    if (reg.waiting && navigator.serviceWorker.controller) showUpdateBar();
+
+    // The worker calls skipWaiting, so a new one claims this page while it is
+    // still running the previous code. That hand-over is the surest sign an
+    // update is live and a reload is worth offering.
+    navigator.serviceWorker.addEventListener('controllerchange', showUpdateBar);
+
+    reg.addEventListener('updatefound', () => {
+      const incoming = reg.installing;
+      if (!incoming) return;
+      incoming.addEventListener('statechange', () => {
+        // No controller means this is the very first install, not an update.
+        if (incoming.state === 'installed' && navigator.serviceWorker.controller) {
+          showUpdateBar();
+        }
+      });
+    });
+
+    // Installed copies can sit for days without the browser rechecking sw.js,
+    // which is how a phone ends up showing an old build. Ask on every launch and
+    // then hourly while the app stays open.
+    const check = () => reg.update().catch(() => {});
+    check();
+    setInterval(check, 60 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') check();
     });
   });
 }
