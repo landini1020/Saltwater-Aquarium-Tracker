@@ -100,10 +100,18 @@ function filtered(all) {
     })
     .filter((l) => {
       if (!needle) return true;
-      const hay = `${l.name || ''} ${l.scientificName || ''} ${l.source || ''} ${l.notes || ''}`.toLowerCase();
+      const hay = `${l.name || ''} ${l.type || ''} ${l.scientificName || ''} ${l.source || ''} ${l.notes || ''}`.toLowerCase();
       return hay.includes(needle);
     })
     .sort((a, b) => String(b.acquiredDate || '').localeCompare(String(a.acquiredDate || '')));
+}
+
+/** Types already in use, so the form can offer them for consistent naming. */
+function knownTypes() {
+  const seen = new Set();
+  for (const l of store.livestock()) if (l.type) seen.add(l.type.trim());
+  seen.delete('');
+  return [...seen].sort((a, b) => a.localeCompare(b));
 }
 
 function fillList(list, all, currency) {
@@ -148,6 +156,7 @@ function card(item, currency) {
       <div class="lscard__age">${esc(durationLabel)}: ${esc(duration)}</div>
 
       <div class="lscard__facts">
+        ${item.type ? `<div>Type <b>${esc(item.type)}</b></div>` : ''}
         <div>Added <b>${esc(formatDate(item.acquiredDate))}</b></div>
         ${item.source ? `<div>From <b>${esc(item.source)}</b></div>` : ''}
         ${Number(item.price) ? `<div>Paid <b>${esc(money(item.price, currency))}</b></div>` : ''}
@@ -237,10 +246,17 @@ export function openForm(existing) {
           <input type="text" name="name" value="${esc(item.name)}" placeholder="e.g. Ocellaris Clownfish" required>
         </label>
 
-        <label class="field">
-          <span>Scientific name (optional)</span>
-          <input type="text" name="scientificName" value="${esc(item.scientificName)}" placeholder="e.g. Amphiprion ocellaris">
-        </label>
+        <div class="field-row">
+          <label class="field">
+            <span>Type (optional)</span>
+            <input type="text" name="type" value="${esc(item.type || '')}" list="typeList" placeholder="e.g. Clownfish, Tang, Euphyllia">
+            <datalist id="typeList">${knownTypes().map((t) => `<option value="${esc(t)}"></option>`).join('')}</datalist>
+          </label>
+          <label class="field">
+            <span>Scientific name (optional)</span>
+            <input type="text" name="scientificName" value="${esc(item.scientificName)}" placeholder="e.g. Amphiprion ocellaris">
+          </label>
+        </div>
 
         <div class="field-row">
           <label class="field">
@@ -319,6 +335,7 @@ export function openForm(existing) {
       ...(existing || {}),
       category: values.category,
       name: values.name.trim(),
+      type: values.type.trim(),
       scientificName: values.scientificName.trim(),
       quantity,
       acquiredDate: values.acquiredDate,

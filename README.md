@@ -62,10 +62,26 @@ display, so switching between sg and ppt (or °F and °C) never distorts your hi
 
 ### Livestock
 
-Fish, corals and invertebrates, each with acquisition date, quantity, source store,
-price, and status (in tank / deceased / sold / moved). The card shows how long each has
-been in the tank, counted live. Entering a price when adding livestock optionally files
-the matching expense for you.
+Fish, corals and invertebrates, each with a type, scientific name, acquisition date,
+quantity, source store, price, and status (in tank / deceased / sold / moved). The card
+shows how long each has been in the tank, counted live. Entering a price when adding
+livestock optionally files the matching expense for you.
+
+#### Existing log (`data/jacobs-tank-import.json`)
+
+The tank's history to date — 34 entries, 68 individual animals — transcribed from
+Aquarimate. Load it with **Settings → Import backup**, which replaces everything
+currently in the browser, so import it *before* logging anything new.
+
+Fourteen of the entries have a purchase price recorded ($865 total); the other twenty
+were captured without one and have their price and store left blank rather than guessed.
+The shop is recorded four different ways in the original data ("Discover Aquatics Shop",
+"Discover Aquatics", "Discover Aquatic", "Dicover Aquatics Shop") and has been collapsed
+to **Discover Aquatics** so the spend-by-store breakdown groups it as one place.
+
+Acquisition dates were derived from the list-view ages, which are relative to
+2025-12-13; that reference date was confirmed against every entry whose detail page was
+also captured.
 
 ### Expenses
 
