@@ -3,10 +3,11 @@
 import * as store from '../store.js';
 import * as P from '../params.js';
 import * as charts from '../charts.js';
+import * as sync from '../sync.js';
 import { APP_VERSION } from '../version.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  todayISO, downloadFile,
+  todayISO, downloadFile, formatRelative,
 } from '../ui.js';
 
 const CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'AUD', 'NZD', 'JPY', 'SEK', 'ZAR'];
@@ -82,6 +83,8 @@ export function render(root) {
         </div>
       </section>
 
+      <section class="card" id="syncCard"></section>
+
       <section class="card">
         <div class="card__head"><h2>Your data</h2></div>
         <div class="card__body">
@@ -136,6 +139,121 @@ export function render(root) {
   root.replaceChildren(el);
   wire(el, root);
   describeWorker(el.querySelector('#swState'));
+
+  const syncCard = el.querySelector('#syncCard');
+  renderSync(syncCard);
+
+  // Sync status changes on its own schedule, outside the store's change events,
+  // so the card listens directly and drops the subscription once detached.
+  const off = sync.onStatus(() => {
+    if (!syncCard.isConnected) { off(); return; }
+    renderSync(syncCard);
+  });
+}
+
+/* --- Sync card ------------------------------------------------------------ */
+
+const SYNC_STATE_TEXT = {
+  off: 'Not set up on this device',
+  'signed-out': 'Connected — sign in to start syncing',
+  idle: 'Syncing is on',
+  syncing: 'Syncing…',
+  offline: 'Offline — changes are saved here and sync later',
+  error: 'Sync problem',
+};
+
+let codeSent = false;
+
+function renderSync(card) {
+  const status = sync.getStatus();
+  const configured = sync.isConfigured();
+  const signedIn = sync.isSignedIn();
+
+  const tone = { idle: 'ok', syncing: 'accent', offline: 'warn', error: 'bad' }[status.state] || '';
+  const last = status.lastSyncAt ? `Last synced ${formatRelative(status.lastSyncAt)}` : 'Not synced yet';
+
+  let bodyHtml;
+
+  if (!configured) {
+    bodyHtml = `
+      <p style="font-size:13.5px;color:var(--text-soft);margin-bottom:14px">
+        Your log lives on this device only. Connecting a free Supabase project keeps your
+        phone and desktop on the same data automatically. See <b>docs/cloud-sync.md</b> in
+        the repository for the five-minute setup.
+      </p>
+      <form id="connectForm" novalidate>
+        <label class="field">
+          <span>Project URL</span>
+          <input type="url" name="url" placeholder="https://abcdefgh.supabase.co" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="field">
+          <span>Anon public key</span>
+          <input type="text" name="anonKey" placeholder="eyJhbGciOi…" autocomplete="off" spellcheck="false">
+          <span class="field__hint">
+            The <b>anon public</b> key, not the service role key. It is safe on your device and is
+            stored only here — never in the repository.
+          </span>
+        </label>
+        <button class="btn btn--primary" type="button" data-act="sync-connect">Connect</button>
+      </form>`;
+  } else if (!signedIn) {
+    bodyHtml = `
+      <p style="font-size:13.5px;color:var(--text-soft);margin-bottom:14px">
+        Sign in with your email on each device you want to share the log with. Supabase emails
+        a six-digit code.
+      </p>
+      <form id="signInForm" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" value="${esc(sync.getEmail())}" placeholder="you@example.com" autocomplete="email">
+        </label>
+        ${codeSent ? `
+          <label class="field">
+            <span>Six-digit code</span>
+            <input type="text" name="code" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+          </label>` : ''}
+        <div class="row">
+          <button class="btn ${codeSent ? '' : 'btn--primary'}" type="button" data-act="sync-send-code">
+            ${codeSent ? 'Resend code' : 'Email me a code'}
+          </button>
+          ${codeSent ? '<button class="btn btn--primary" type="button" data-act="sync-verify">Sign in</button>' : ''}
+          <div class="spacer"></div>
+          <button class="btn" type="button" data-act="sync-disconnect">Disconnect</button>
+        </div>
+      </form>`;
+  } else {
+    bodyHtml = `
+      <div class="row" style="margin-bottom:14px">
+        <div>
+          <div style="font-size:14.5px;font-weight:620">${esc(sync.getEmail())}</div>
+          <div class="muted" style="font-size:12.5px">${esc(last)}</div>
+        </div>
+      </div>
+      ${status.state === 'error' && status.message
+        ? `<p style="font-size:13px;color:var(--bad);margin-bottom:12px">${esc(status.message)}</p>` : ''}
+      ${status.state === 'offline'
+        ? `<p style="font-size:13px;color:var(--warn);margin-bottom:12px">${esc(status.message)}</p>` : ''}
+      <div class="row">
+        <button class="btn btn--primary" data-act="sync-now" ${status.state === 'syncing' ? 'disabled' : ''}>
+          ${status.state === 'syncing' ? 'Syncing…' : 'Sync now'}
+        </button>
+        <button class="btn" data-act="sync-signout">Sign out</button>
+        <div class="spacer"></div>
+        <button class="btn btn--danger" data-act="sync-disconnect">Disconnect</button>
+      </div>
+      <p class="field__hint" style="margin-top:12px">
+        Changes sync a few seconds after you make them, whenever you reopen the app, and every
+        few minutes while it is open. Editing the same record on two devices keeps the later edit.
+      </p>`;
+  }
+
+  card.innerHTML = `
+    <div class="card__head">
+      <h2>Sync across devices</h2>
+      <div class="spacer"></div>
+      <span class="badge ${tone ? `badge--${tone}` : ''}">${esc(SYNC_STATE_TEXT[status.state] || status.state)}</span>
+    </div>
+    <div class="card__body">${bodyHtml}</div>`;
 }
 
 /** Report whether the offline copy is registered, so a stale device is obvious. */
@@ -337,6 +455,76 @@ async function handleAction(action, el, root) {
 
     case 'add-param': {
       openParamForm(null);
+      return;
+    }
+
+    case 'sync-connect': {
+      const values = formValues(el.querySelector('#connectForm'));
+      try {
+        await sync.connect({ url: values.url, anonKey: values.anonKey });
+        codeSent = false;
+        toast('Project connected — now sign in');
+      } catch (err) {
+        toast(err.message);
+      }
+      renderSync(el.querySelector('#syncCard'));
+      return;
+    }
+
+    case 'sync-send-code': {
+      const values = formValues(el.querySelector('#signInForm'));
+      try {
+        await sync.requestCode(values.email);
+        codeSent = true;
+        toast('Check your email for the code');
+      } catch (err) {
+        toast(err.message);
+      }
+      renderSync(el.querySelector('#syncCard'));
+      return;
+    }
+
+    case 'sync-verify': {
+      const values = formValues(el.querySelector('#signInForm'));
+      try {
+        const result = await sync.verifyCode(values.email, values.code);
+        codeSent = false;
+        toast(result && result.error ? result.error : 'Signed in — syncing now');
+      } catch (err) {
+        toast(err.message);
+      }
+      renderSync(el.querySelector('#syncCard'));
+      return;
+    }
+
+    case 'sync-now': {
+      const result = await sync.syncNow();
+      if (result && result.error) toast(result.error);
+      else if (result && result.skipped) toast('Sign in to sync.');
+      else toast(`Synced — ${result.pushed} sent, ${result.pulled} received`);
+      return;
+    }
+
+    case 'sync-signout': {
+      await sync.signOut();
+      codeSent = false;
+      toast('Signed out of sync');
+      renderSync(el.querySelector('#syncCard'));
+      return;
+    }
+
+    case 'sync-disconnect': {
+      const ok = await confirmDialog({
+        title: 'Disconnect sync?',
+        message: 'This device stops syncing and forgets the project details. Your log stays here, and anything already synced stays in the cloud.',
+        confirmLabel: 'Disconnect',
+        danger: true,
+      });
+      if (!ok) return;
+      await sync.clearConfig();
+      codeSent = false;
+      toast('Sync disconnected');
+      renderSync(el.querySelector('#syncCard'));
       return;
     }
 

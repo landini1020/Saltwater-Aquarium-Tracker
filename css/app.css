@@ -729,6 +729,22 @@ details[open] > summary::before { content: '▾ '; }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
 @media (min-width: 900px) { .toast { bottom: 24px; } }
 
+/* --- Sync indicator ------------------------------------------------------- */
+
+.syncdot {
+  display: grid; place-items: center; flex: none;
+  width: 34px; height: 34px; border-radius: var(--r-sm);
+  color: var(--text-faint);
+}
+.syncdot:hover { background: var(--bg-sunk); }
+.syncdot svg { width: 18px; height: 18px; }
+.syncdot.is-syncing { color: var(--accent); }
+.syncdot.is-syncing svg { animation: spin 1.1s linear infinite; }
+.syncdot.is-offline { color: var(--warn); }
+.syncdot.is-error   { color: var(--bad); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .syncdot.is-syncing svg { animation: none; } }
+
 /* --- Update banner -------------------------------------------------------- */
 
 .updatebar {

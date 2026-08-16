@@ -136,18 +136,36 @@ monthly spend chart, and breakdowns showing where the money actually goes.
 
 ## Where your data lives
 
-In your browser's IndexedDB, on the device you entered it on. Nothing is uploaded
-anywhere — there is no server and no account.
+In your browser's IndexedDB, on the device you entered it on. Out of the box nothing is
+uploaded anywhere — no server, no account, and **your phone and desktop keep separate
+logs**.
 
-The practical consequence: **your phone and your desktop keep separate logs.** The
-starting log ships with the app so it appears on every device by itself, but anything
-logged *afterwards* stays on the device it was entered on. To move that across, use
-**Settings → Export backup** to download a JSON file, then **Import backup** on the
-other device. Export is also your only backup, so do it periodically — clearing your
-browser's site data will erase everything you have logged.
+Two ways to change that:
 
-If you later want the two devices to sync live, the storage layer is isolated behind
-`js/store.js`; a hosted backend can be added there without touching the views.
+**Cloud sync** — connect a free Supabase project and every device shares one live log,
+syncing in the background. See [docs/cloud-sync.md](docs/cloud-sync.md); it takes about
+five minutes. Credentials are entered in the app and stored on the device, never in this
+repository.
+
+**Export / import** — **Settings → Export backup** downloads a JSON file that
+**Import backup** restores on another device. Worth doing periodically even with sync
+on: clearing your browser's site data erases the local copy.
+
+### How sync behaves
+
+Every record carries the time it last changed. Sync pulls remote changes first, resolves
+any clash by keeping whichever edit is newer, then pushes the result — pushing first
+would let a stale local copy overwrite a newer edit made elsewhere. Deletions travel as
+tombstones, so removing something on one device does not have it sent back by the other.
+Everything keeps working offline and catches up when a connection returns.
+
+Tanks, parameters, readings, livestock, expenses, equipment, supplements, tasks and
+activities all sync. Per-device preferences — theme, units, currency — deliberately do
+not, nor does the sync configuration itself.
+
+`test-sync.html` runs the sync engine against an in-page fake of the REST endpoints,
+covering a two-device round trip, deletion propagation and both directions of a
+conflicting edit. Open it on the dev server; no network or Supabase project needed.
 
 ---
 
@@ -187,6 +205,7 @@ js/
   app.js                 boot, hash router, chrome
   db.js                  IndexedDB wrapper
   store.js               in-memory domain store, seeding, export/import
+  sync.js                optional Supabase sync over plain REST
   seed-data.js           the tank's existing log, installed on first run
   params.js              parameter definitions, units, range evaluation
   charts.js              SVG line/bar charts and sparklines

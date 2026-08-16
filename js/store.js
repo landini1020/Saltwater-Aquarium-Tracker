@@ -170,17 +170,21 @@ async function seed() {
       const payload = data[exportName];
       if (!payload) continue;
 
+      // Seeded rows need a change time like any other, so they can be pushed to
+      // a sync backend that has never seen them.
+      const withStamp = (row) => structuredClone({ ...row, updatedAt: row.updatedAt || row.createdAt });
+
       if (name === 'tanks') {
         // Any tank present here holds no records — typically the empty
         // placeholder from an earlier visit — so replacing it loses nothing.
         const stale = state.tanks.map((t) => t.id).filter((id) => id !== payload.id);
         if (stale.length) writes.push(db.removeMany('tanks', stale));
 
-        state.tanks = [structuredClone(payload)];
+        state.tanks = [withStamp(payload)];
         writes.push(db.put('tanks', state.tanks[0]));
         state.settings.activeTankId = payload.id;
       } else {
-        state[name] = payload.map((row) => structuredClone(row));
+        state[name] = payload.map(withStamp);
         writes.push(db.putMany(name, state[name]));
       }
       done.add(name);
@@ -213,7 +217,10 @@ async function seed() {
   // Add any built-in parameters this install has never seen. Existing ones are
   // left alone so edited target ranges survive an app update.
   const known = new Set(state.params.map((p) => p.id));
-  const missing = DEFAULT_PARAMETERS.filter((p) => !known.has(p.id)).map((p) => structuredClone(p));
+  const now = new Date().toISOString();
+  const missing = DEFAULT_PARAMETERS
+    .filter((p) => !known.has(p.id))
+    .map((p) => structuredClone({ ...p, createdAt: now, updatedAt: now }));
   if (missing.length) {
     state.params.push(...missing);
     writes.push(db.putMany('params', missing));
@@ -235,12 +242,16 @@ function todayISO() {
 
 /* --- Accessors ------------------------------------------------------------ */
 
-export const tanks = () => state.tanks;
-export const params = () => state.params;
+export const tanks = () => state.tanks.filter(isLive);
+export const params = () => state.params.filter(isLive);
 export const settings = () => state.settings;
 
+/** Raw contents including tombstones — for the sync engine only. */
+export const allRecords = (collection) => state[collection];
+
 export function activeTank() {
-  return state.tanks.find((t) => t.id === state.settings.activeTankId) || state.tanks[0] || null;
+  const live = tanks();
+  return live.find((t) => t.id === state.settings.activeTankId) || live[0] || null;
 }
 
 export function activeTankId() {
@@ -260,14 +271,22 @@ export function displayUnit(param) {
   return param.defaultUnit;
 }
 
+/* Deleted records are kept as tombstones so the removal can travel to other
+   devices; every read path has to skip them. */
+const isLive = (r) => !r.deleted;
+
+function liveIn(collection, tankId) {
+  return state[collection].filter((r) => isLive(r) && r.tankId === tankId);
+}
+
 export function readings(tankId = activeTankId()) {
-  return state.readings.filter((r) => r.tankId === tankId);
+  return liveIn('readings', tankId);
 }
 
 /** Readings for one parameter, oldest first. */
 export function readingsFor(paramId, tankId = activeTankId()) {
-  return state.readings
-    .filter((r) => r.tankId === tankId && r.paramId === paramId)
+  return liveIn('readings', tankId)
+    .filter((r) => r.paramId === paramId)
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
@@ -277,29 +296,28 @@ export function latestReading(paramId, tankId = activeTankId()) {
 }
 
 export function livestock(tankId = activeTankId()) {
-  return state.livestock.filter((l) => l.tankId === tankId);
+  return liveIn('livestock', tankId);
 }
 
 export function expenses(tankId = activeTankId()) {
-  return state.expenses.filter((e) => e.tankId === tankId);
+  return liveIn('expenses', tankId);
 }
 
 export function equipment(tankId = activeTankId()) {
-  return state.equipment.filter((e) => e.tankId === tankId);
+  return liveIn('equipment', tankId);
 }
 
 export function supplements(tankId = activeTankId()) {
-  return state.supplements.filter((s) => s.tankId === tankId);
+  return liveIn('supplements', tankId);
 }
 
 export function tasks(tankId = activeTankId()) {
-  return state.tasks.filter((t) => t.tankId === tankId);
+  return liveIn('tasks', tankId);
 }
 
 /** Activity history, newest first. */
 export function activities(tankId = activeTankId()) {
-  return state.activities
-    .filter((a) => a.tankId === tankId)
+  return liveIn('activities', tankId)
     .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
 }
 
@@ -309,6 +327,54 @@ export function activitiesForTask(taskId, tankId = activeTankId()) {
 
 /* --- Mutations ------------------------------------------------------------ */
 
+/* Every write funnels through upsert/tombstone so that `updatedAt` — the field
+   the sync engine compares — can never be forgotten on one code path. */
+
+function stamp(row) {
+  return { ...row, updatedAt: new Date().toISOString() };
+}
+
+/** Insert or replace a record, stamping the change time. */
+function upsert(collection, record) {
+  const row = stamp(record);
+  if (!row.id) {
+    row.id = uid();
+    row.createdAt = row.updatedAt;
+  }
+
+  const i = state[collection].findIndex((r) => r.id === row.id);
+  if (i >= 0) state[collection][i] = row; else state[collection].push(row);
+
+  return db.put(collection, row).then(() => { emit(); return row; });
+}
+
+/**
+ * Soft-delete: the record stays as a tombstone so the removal reaches other
+ * devices. Nothing reads tombstones except the sync engine.
+ */
+function tombstone(collection, id) {
+  const existing = state[collection].find((r) => r.id === id);
+  if (!existing) return Promise.resolve();
+
+  const row = stamp({ ...existing, deleted: true });
+  const i = state[collection].findIndex((r) => r.id === id);
+  state[collection][i] = row;
+
+  return db.put(collection, row).then(() => { emit(); });
+}
+
+function tombstoneMany(collection, ids) {
+  const set = new Set(ids);
+  const rows = state[collection].filter((r) => set.has(r.id)).map((r) => stamp({ ...r, deleted: true }));
+  if (!rows.length) return Promise.resolve();
+
+  for (const row of rows) {
+    const i = state[collection].findIndex((r) => r.id === row.id);
+    state[collection][i] = row;
+  }
+  return db.putMany(collection, rows).then(() => { emit(); });
+}
+
 export async function saveSettings(patch) {
   state.settings = { ...state.settings, ...patch, key: 'settings' };
   await db.put('meta', state.settings);
@@ -316,61 +382,37 @@ export async function saveSettings(patch) {
   return state.settings;
 }
 
-export async function saveTank(tank) {
-  const record = { ...tank };
-  if (!record.id) {
-    record.id = uid();
-    record.createdAt = new Date().toISOString();
-    state.tanks.push(record);
-  } else {
-    const i = state.tanks.findIndex((t) => t.id === record.id);
-    if (i >= 0) state.tanks[i] = record; else state.tanks.push(record);
-  }
-  await db.put('tanks', record);
-  emit();
-  return record;
+export function saveTank(tank) {
+  return upsert('tanks', tank);
 }
 
 export async function deleteTank(tankId) {
-  if (state.tanks.length <= 1) throw new Error('You need at least one tank.');
+  if (tanks().length <= 1) throw new Error('You need at least one tank.');
 
   const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
 
-  await Promise.all([
-    db.remove('tanks', tankId),
-    ...owned.map((name) => db.removeMany(name, state[name].filter((r) => r.tankId === tankId).map((r) => r.id))),
-  ]);
-
-  state.tanks = state.tanks.filter((t) => t.id !== tankId);
+  await tombstone('tanks', tankId);
   for (const name of owned) {
-    state[name] = state[name].filter((r) => r.tankId !== tankId);
+    await tombstoneMany(name, liveIn(name, tankId).map((r) => r.id));
   }
 
   if (state.settings.activeTankId === tankId) {
-    await saveSettings({ activeTankId: state.tanks[0].id });
+    await saveSettings({ activeTankId: tanks()[0].id });
   } else {
     emit();
   }
 }
 
-export async function saveParam(param) {
-  const record = { ...param };
-  const i = state.params.findIndex((p) => p.id === record.id);
-  if (i >= 0) state.params[i] = record; else state.params.push(record);
-  await db.put('params', record);
-  emit();
-  return record;
+export function saveParam(param) {
+  return upsert('params', param);
 }
 
 export async function deleteParam(paramId) {
   const param = paramById(paramId);
   if (param && param.builtIn) throw new Error('Built-in parameters can be hidden but not deleted.');
 
-  const readingIds = state.readings.filter((r) => r.paramId === paramId).map((r) => r.id);
-  await Promise.all([db.remove('params', paramId), db.removeMany('readings', readingIds)]);
-  state.params = state.params.filter((p) => p.id !== paramId);
-  state.readings = state.readings.filter((r) => r.paramId !== paramId);
-  emit();
+  await tombstoneMany('readings', state.readings.filter((r) => isLive(r) && r.paramId === paramId).map((r) => r.id));
+  await tombstone('params', paramId);
 }
 
 /**
@@ -380,16 +422,18 @@ export async function deleteParam(paramId) {
  */
 export async function saveReadings(session, entries) {
   const tankId = session.tankId || activeTankId();
-  const date = session.date;
+  const now = new Date().toISOString();
+
   const batch = entries.map((e) => ({
     id: uid(),
     tankId,
     paramId: e.paramId,
     value: e.value,
     unit: e.unit,
-    date,
+    date: session.date,
     note: session.note || '',
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   }));
 
   if (!batch.length) return [];
@@ -399,129 +443,54 @@ export async function saveReadings(session, entries) {
   return batch;
 }
 
-export async function saveReading(reading) {
-  const record = { ...reading };
-  if (!record.id) {
-    record.id = uid();
-    record.createdAt = new Date().toISOString();
-    state.readings.push(record);
-  } else {
-    const i = state.readings.findIndex((r) => r.id === record.id);
-    if (i >= 0) state.readings[i] = record; else state.readings.push(record);
-  }
-  await db.put('readings', record);
-  emit();
-  return record;
+export function saveReading(reading) {
+  return upsert('readings', reading);
 }
 
-export async function deleteReading(id) {
-  await db.remove('readings', id);
-  state.readings = state.readings.filter((r) => r.id !== id);
-  emit();
+export function deleteReading(id) {
+  return tombstone('readings', id);
 }
 
 /** Delete every reading taken at one timestamp (i.e. one whole test session). */
-export async function deleteReadingsAt(date, tankId = activeTankId()) {
-  const ids = state.readings.filter((r) => r.tankId === tankId && r.date === date).map((r) => r.id);
-  await db.removeMany('readings', ids);
-  const kill = new Set(ids);
-  state.readings = state.readings.filter((r) => !kill.has(r.id));
-  emit();
+export function deleteReadingsAt(date, tankId = activeTankId()) {
+  const ids = liveIn('readings', tankId).filter((r) => r.date === date).map((r) => r.id);
+  return tombstoneMany('readings', ids);
 }
 
-export async function saveLivestock(item) {
-  const record = { ...item };
-  if (!record.tankId) record.tankId = activeTankId();
-  if (!record.id) {
-    record.id = uid();
-    record.createdAt = new Date().toISOString();
-    state.livestock.push(record);
-  } else {
-    const i = state.livestock.findIndex((l) => l.id === record.id);
-    if (i >= 0) state.livestock[i] = record; else state.livestock.push(record);
-  }
-  await db.put('livestock', record);
-  emit();
-  return record;
+export function saveLivestock(item) {
+  return upsert('livestock', { tankId: activeTankId(), ...item });
 }
 
-export async function deleteLivestock(id) {
-  await db.remove('livestock', id);
-  state.livestock = state.livestock.filter((l) => l.id !== id);
-  emit();
+export function deleteLivestock(id) {
+  return tombstone('livestock', id);
 }
 
-export async function saveExpense(expense) {
-  const record = { ...expense };
-  if (!record.tankId) record.tankId = activeTankId();
-  if (!record.id) {
-    record.id = uid();
-    record.createdAt = new Date().toISOString();
-    state.expenses.push(record);
-  } else {
-    const i = state.expenses.findIndex((e) => e.id === record.id);
-    if (i >= 0) state.expenses[i] = record; else state.expenses.push(record);
-  }
-  await db.put('expenses', record);
-  emit();
-  return record;
+export function saveExpense(expense) {
+  return upsert('expenses', { tankId: activeTankId(), ...expense });
 }
 
-export async function deleteExpense(id) {
-  await db.remove('expenses', id);
-  state.expenses = state.expenses.filter((e) => e.id !== id);
-  emit();
+export function deleteExpense(id) {
+  return tombstone('expenses', id);
 }
 
-/* Equipment, supplements, tasks and activities are plain records with no special
-   handling, so they share one save/delete pair rather than four near-identical
-   copies of the same code. */
+const scoped = (record) => ({ tankId: activeTankId(), ...record });
 
-function upsert(collection, record) {
-  const row = { ...record };
-  if (!row.tankId) row.tankId = activeTankId();
+export const saveEquipment = (record) => upsert('equipment', scoped(record));
+export const deleteEquipment = (id) => tombstone('equipment', id);
 
-  if (!row.id) {
-    row.id = uid();
-    row.createdAt = new Date().toISOString();
-    state[collection].push(row);
-  } else {
-    const i = state[collection].findIndex((r) => r.id === row.id);
-    if (i >= 0) state[collection][i] = row; else state[collection].push(row);
-  }
+export const saveSupplement = (record) => upsert('supplements', scoped(record));
+export const deleteSupplement = (id) => tombstone('supplements', id);
 
-  return db.put(collection, row).then(() => { emit(); return row; });
-}
-
-function drop(collection, id) {
-  return db.remove(collection, id).then(() => {
-    state[collection] = state[collection].filter((r) => r.id !== id);
-    emit();
-  });
-}
-
-export const saveEquipment = (record) => upsert('equipment', record);
-export const deleteEquipment = (id) => drop('equipment', id);
-
-export const saveSupplement = (record) => upsert('supplements', record);
-export const deleteSupplement = (id) => drop('supplements', id);
-
-export const saveTask = (record) => upsert('tasks', record);
-export const saveActivity = (record) => upsert('activities', record);
-export const deleteActivity = (id) => drop('activities', id);
+export const saveTask = (record) => upsert('tasks', scoped(record));
+export const saveActivity = (record) => upsert('activities', scoped(record));
+export const deleteActivity = (id) => tombstone('activities', id);
 
 /** Deleting a task leaves its activity history in place as a record of the work. */
 export async function deleteTask(id) {
-  const orphans = state.activities.filter((a) => a.taskId === id);
-  if (orphans.length) {
-    const detached = orphans.map((a) => ({ ...a, taskId: null }));
-    await db.putMany('activities', detached);
-    for (const row of detached) {
-      const i = state.activities.findIndex((a) => a.id === row.id);
-      if (i >= 0) state.activities[i] = row;
-    }
+  for (const activity of state.activities.filter((a) => isLive(a) && a.taskId === id)) {
+    await upsert('activities', { ...activity, taskId: null });
   }
-  await drop('tasks', id);
+  await tombstone('tasks', id);
 }
 
 /**
@@ -534,7 +503,7 @@ export async function logTaskActivity(taskId, { action = 'Performed', date, note
 
   const when = date || todayISO();
 
-  await upsert('activities', {
+  await saveActivity({
     taskId,
     taskName: task.name,
     action,
@@ -545,7 +514,7 @@ export async function logTaskActivity(taskId, { action = 'Performed', date, note
   // Only move the clock forward — back-filling an older entry should not make a
   // task look more recently done than it is.
   if (!task.lastActivity || when > task.lastActivity) {
-    await upsert('tasks', { ...task, lastActivity: when });
+    await saveTask({ ...task, lastActivity: when });
   }
 
   return when;
@@ -554,10 +523,65 @@ export async function logTaskActivity(taskId, { action = 'Performed', date, note
 /** Every store name a store has ever seen, for the store/vendor autocomplete. */
 export function knownStores() {
   const names = new Set();
-  for (const e of state.expenses) if (e.store) names.add(e.store.trim());
-  for (const l of state.livestock) if (l.source) names.add(l.source.trim());
+  for (const e of state.expenses) if (isLive(e) && e.store) names.add(e.store.trim());
+  for (const l of state.livestock) if (isLive(l) && l.source) names.add(l.source.trim());
   names.delete('');
   return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/* --- Sync support --------------------------------------------------------- */
+
+/** Collections that travel between devices. Settings stay per-device. */
+export const SYNCED = ['tanks', 'params', 'readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
+
+/** Records changed at or after `since` (an ISO string), across every collection. */
+export function changedSince(since) {
+  const out = [];
+  for (const collection of SYNCED) {
+    for (const row of state[collection]) {
+      if (!since || !row.updatedAt || row.updatedAt > since) {
+        out.push({ collection, row });
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Merge records arriving from another device. Last write wins on `updatedAt`,
+ * so a local edit made after the remote one is kept rather than clobbered.
+ * @returns {string[]} keys ("collection|id") of the records actually applied,
+ *          which the caller uses to avoid echoing them straight back.
+ */
+export async function mergeRemote(incoming) {
+  const byCollection = new Map();
+
+  for (const { collection, row } of incoming) {
+    if (!SYNCED.includes(collection) || !row || !row.id) continue;
+
+    const existing = state[collection].find((r) => r.id === row.id);
+    if (existing && existing.updatedAt && row.updatedAt && existing.updatedAt >= row.updatedAt) continue;
+
+    if (!byCollection.has(collection)) byCollection.set(collection, []);
+    byCollection.get(collection).push(row);
+  }
+
+  const applied = [];
+  for (const [collection, rows] of byCollection) {
+    await db.putMany(collection, rows);
+    for (const row of rows) {
+      const i = state[collection].findIndex((r) => r.id === row.id);
+      if (i >= 0) state[collection][i] = row; else state[collection].push(row);
+      applied.push(`${collection}|${row.id}`);
+    }
+  }
+
+  if (applied.length) {
+    // A tank arriving from another device may be the only one this device knows.
+    if (!activeTank() && tanks().length) state.settings.activeTankId = tanks()[0].id;
+    emit();
+  }
+  return applied;
 }
 
 /* --- Backup / restore ----------------------------------------------------- */
