@@ -6,7 +6,7 @@ import * as store from '../store.js';
 import * as charts from '../charts.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  formatDate, formatDuration, todayISO, money, emptyState, plural,
+  formatDate, formatDuration, todayISO, money, emptyState, plural, processPhoto,
 } from '../ui.js';
 
 const { LIVESTOCK_CATEGORIES, LIVESTOCK_STATUSES } = store;
@@ -145,7 +145,11 @@ function card(item, currency) {
   return `
     <article class="lscard ${status === 'alive' ? '' : 'is-gone'}">
       <div class="lscard__top">
-        <span class="avatar" aria-hidden="true">${cat.icon}</span>
+        ${item.thumb
+          ? `<button type="button" class="avatar avatar--photo" data-photo="${esc(item.id)}" aria-label="View photo of ${esc(item.name)}">
+               <img src="${esc(item.thumb)}" alt="" loading="lazy">
+             </button>`
+          : `<span class="avatar" aria-hidden="true">${cat.icon}</span>`}
         <div style="flex:1;min-width:0">
           <div class="lscard__name">${esc(item.name || 'Unnamed')}${qty > 1 ? ` <span class="muted">×${qty}</span>` : ''}</div>
           ${item.scientificName ? `<div class="lscard__sci">${esc(item.scientificName)}</div>` : ''}
@@ -167,6 +171,7 @@ function card(item, currency) {
 
       <div class="lscard__acts">
         <button class="btn btn--sm" data-edit="${esc(item.id)}">Edit</button>
+        <button class="btn btn--sm" data-addphoto="${esc(item.id)}">${item.thumb ? 'Replace photo' : 'Add photo'}</button>
         <div class="spacer"></div>
         <button class="iconbtn" data-del="${esc(item.id)}" aria-label="Delete ${esc(item.name || 'entry')}">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
@@ -194,6 +199,12 @@ function wire(el, root) {
       return;
     }
 
+    const addPhoto = event.target.closest('[data-addphoto]');
+    if (addPhoto) { pickPhoto(addPhoto.dataset.addphoto); return; }
+
+    const viewPhoto = event.target.closest('[data-photo]');
+    if (viewPhoto) { openPhoto(viewPhoto.dataset.photo); return; }
+
     const del = event.target.closest('[data-del]');
     if (del) {
       const item = store.livestock().find((l) => l.id === del.dataset.del);
@@ -217,6 +228,87 @@ function wire(el, root) {
       fillList(el.querySelector('#lsList'), store.livestock(), store.settings().currency);
     });
   }
+}
+
+/* --- Photos ---------------------------------------------------------------- */
+
+/**
+ * Open the camera or photo library for one entry.
+ *
+ * A file input is used rather than getUserMedia because on iOS it offers Take
+ * Photo and Photo Library in one sheet, and hands back a still the OS has
+ * already oriented and converted out of HEIC.
+ */
+function pickPhoto(livestockId) {
+  const item = store.livestock().find((l) => l.id === livestockId);
+  if (!item) return;
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.hidden = true;
+  document.body.append(input);
+
+  input.addEventListener('change', async () => {
+    const file = input.files && input.files[0];
+    input.remove();
+    if (!file) return;
+
+    toast('Processing photo…');
+    try {
+      const sizeKey = store.settings().photoSize || 'high';
+      const processed = await processPhoto(file, sizeKey);
+      await store.savePhoto(livestockId, processed);
+      toast(`Photo added · ${processed.width}×${processed.height}, ${Math.round(processed.bytes / 1024)} KB`);
+    } catch (err) {
+      toast(err.message || 'That photo could not be added.');
+    }
+  }, { once: true });
+
+  input.click();
+}
+
+/** Full-size viewer. The Blob URL is released when the dialog closes. */
+async function openPhoto(livestockId) {
+  const item = store.livestock().find((l) => l.id === livestockId);
+  if (!item) return;
+
+  const blob = await store.loadPhoto(livestockId);
+  const url = blob ? URL.createObjectURL(blob) : item.thumb;
+
+  const modal = openModal({
+    title: item.name || 'Photo',
+    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">
+           ${blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>'}`,
+    footer: `
+      <button class="btn btn--danger" data-act="remove-photo">Remove</button>
+      <span class="spacer"></span>
+      <button class="btn" data-act="replace-photo">Replace</button>
+      <button class="btn btn--primary" data-close>Done</button>`,
+    onClose: () => { if (blob) URL.revokeObjectURL(url); },
+  });
+
+  modal.footer.addEventListener('click', async (event) => {
+    const act = event.target.closest('[data-act]');
+    if (!act) return;
+
+    if (act.dataset.act === 'replace-photo') {
+      closeModal();
+      pickPhoto(livestockId);
+      return;
+    }
+
+    if (act.dataset.act === 'remove-photo') {
+      closeModal();
+      const ok = await confirmDialog({
+        title: 'Remove this photo?',
+        message: 'The photo is deleted from Reef Log. The original stays in your photo library.',
+        confirmLabel: 'Remove',
+        danger: true,
+      });
+      if (ok) { await store.deletePhoto(livestockId); toast('Photo removed'); }
+    }
+  });
 }
 
 /* --- Add / edit form ------------------------------------------------------ */

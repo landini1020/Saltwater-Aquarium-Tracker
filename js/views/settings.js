@@ -6,7 +6,7 @@ import * as charts from '../charts.js';
 import { APP_VERSION } from '../version.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  todayISO, saveFile, formatDate, formatRelative,
+  todayISO, saveFile, formatDate, formatRelative, plural, PHOTO_SIZES,
 } from '../ui.js';
 
 const CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'AUD', 'NZD', 'JPY', 'SEK', 'ZAR'];
@@ -78,6 +78,17 @@ export function render(root) {
               </select>
             </label>
           </div>
+          <label class="field">
+            <span>Photo quality</span>
+            <select id="photoSizeSelect">
+              ${Object.entries(PHOTO_SIZES).map(([k, v]) => `<option value="${k}" ${(settings.photoSize || 'high') === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}
+            </select>
+            <span class="field__hint">
+              Applies to photos added from now on. Photos are stored on this device only —
+              at 4K a hundred of them runs to roughly 275&nbsp;MB, which a phone may reclaim,
+              so High is the sensible default. Your originals stay in your photo library.
+            </span>
+          </label>
           <p class="field__hint">Parameters measured in more than one unit (salinity, temperature) use whichever unit you last typed a reading in. Change it any time from the Log Test form or by editing the parameter above.</p>
         </div>
       </section>
@@ -179,9 +190,14 @@ async function renderStorage(card) {
        </p>`
     : '';
 
+  const photos = await store.photoUsage();
+
   const rows = [
     ['Backup', backupLine, stale ? 'bad' : 'ok'],
     ['Stored on device', formatBytes(health.usage), ''],
+    ...(photos.count
+      ? [['Photos', `${plural(photos.count, 'photo')}, ${formatBytes(photos.bytes)} — not included in backups`, photos.bytes > 150 * 1024 * 1024 ? 'warn' : '']]
+      : []),
     health.supported
       ? ['Eviction protection', health.persisted ? 'Granted — the browser will keep this data' : 'Not granted — the browser may reclaim it if space runs low', health.persisted ? 'ok' : 'warn']
       : ['Eviction protection', 'Not reportable in this browser', ''],
@@ -359,6 +375,12 @@ function wire(el, root) {
 
     if (event.target.id === 'themeSelect') {
       await store.saveSettings({ theme: event.target.value });
+      return;
+    }
+
+    if (event.target.id === 'photoSizeSelect') {
+      await store.saveSettings({ photoSize: event.target.value });
+      toast('Applies to photos added from now on');
       return;
     }
 

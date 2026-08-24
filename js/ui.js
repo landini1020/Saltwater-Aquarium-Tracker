@@ -337,6 +337,91 @@ export function parseNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+/* --- Images --------------------------------------------------------------- */
+
+/** Longest-edge presets. "Original" still caps at 4K — phone cameras exceed it. */
+export const PHOTO_SIZES = {
+  standard: { label: 'Standard — 1280 px', edge: 1280, quality: 0.82 },
+  high: { label: 'High — 2048 px', edge: 2048, quality: 0.85 },
+  original: { label: 'Maximum — 4K', edge: 3840, quality: 0.9 },
+};
+
+const THUMB_EDGE = 320;
+const THUMB_QUALITY = 0.72;
+
+function decode(file) {
+  if (typeof createImageBitmap === 'function') {
+    // Honour the EXIF orientation phones write, or landscape shots come out sideways.
+    return createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => decodeViaImg(file));
+  }
+  return decodeViaImg(file);
+}
+
+function decodeViaImg(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('That image could not be read.')); };
+    img.src = url;
+  });
+}
+
+function draw(source, edge, quality, asDataUrl) {
+  const w0 = source.width || source.naturalWidth;
+  const h0 = source.height || source.naturalHeight;
+  const scale = Math.min(1, edge / Math.max(w0, h0));
+  const w = Math.max(1, Math.round(w0 * scale));
+  const h = Math.max(1, Math.round(h0 * scale));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(source, 0, 0, w, h);
+
+  if (asDataUrl) return Promise.resolve({ dataUrl: canvas.toDataURL('image/jpeg', quality), width: w, height: h });
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve({ blob, width: w, height: h }), 'image/jpeg', quality);
+  });
+}
+
+/**
+ * Turn a camera or library file into a small thumbnail plus a downscaled full
+ * image. A phone photo is several megabytes; stored as-is, a hundred of them
+ * would dwarf the log and invite the browser to evict the lot.
+ *
+ * @returns {Promise<{thumb:string, blob:Blob, width:number, height:number, bytes:number}>}
+ */
+export async function processPhoto(file, sizeKey = 'high') {
+  if (!file || !file.type || !file.type.startsWith('image/')) {
+    throw new Error('That file is not an image.');
+  }
+
+  const preset = PHOTO_SIZES[sizeKey] || PHOTO_SIZES.high;
+  const source = await decode(file);
+
+  try {
+    const [full, thumb] = await Promise.all([
+      draw(source, preset.edge, preset.quality, false),
+      draw(source, THUMB_EDGE, THUMB_QUALITY, true),
+    ]);
+
+    if (!full.blob) throw new Error('That image could not be converted.');
+
+    return {
+      thumb: thumb.dataUrl,
+      blob: full.blob,
+      width: full.width,
+      height: full.height,
+      bytes: full.blob.size,
+    };
+  } finally {
+    if (source.close) source.close();
+  }
+}
+
 /* --- Misc ----------------------------------------------------------------- */
 
 export function emptyState({ title, message, action = '' }) {

@@ -644,6 +644,24 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
   background: var(--bg-sunk);
 }
 
+/* Photo thumbnails sit in the same slot as the emoji fallback. */
+.avatar--photo {
+  padding: 0; border: 1px solid var(--line); cursor: pointer;
+  overflow: hidden;
+  width: 46px; height: 46px;
+}
+.avatar--photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar--photo:hover { border-color: var(--accent); }
+
+.photoview {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: var(--r-md);
+  background: var(--bg-sunk);
+}
+
 /* --- Maintenance tasks ---------------------------------------------------- */
 
 .taskcard { border-left: 3px solid var(--line-strong); }

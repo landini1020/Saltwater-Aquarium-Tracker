@@ -49,6 +49,7 @@ const DEFAULT_SETTINGS = {
   seedVersion: 0,
   seededCollections: [],
   lastBackupAt: null,
+  photoSize: 'high',
 };
 
 /* Nag for a backup once the newest one is older than this. */
@@ -468,6 +469,8 @@ export async function saveLivestock(item) {
 }
 
 export async function deleteLivestock(id) {
+  // Drop the photo too, or its bytes linger with nothing pointing at them.
+  await db.remove('photos', id).catch(() => {});
   await db.remove('livestock', id);
   state.livestock = state.livestock.filter((l) => l.id !== id);
   emit();
@@ -580,6 +583,58 @@ export function knownStores() {
   for (const l of state.livestock) if (l.source) names.add(l.source.trim());
   names.delete('');
   return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/* --- Photos ---------------------------------------------------------------- */
+
+/* A livestock record carries only `thumb`, a small data URL, so the list renders
+   instantly and a backup still looks right after a restore. The full-size image
+   is a Blob in its own store, keyed by the livestock id, and stays on the
+   device — including it in the backup would push the file past what a phone can
+   share. The originals remain in your photo library regardless. */
+
+export async function savePhoto(livestockId, { thumb, blob, width, height, bytes }) {
+  const item = state.livestock.find((l) => l.id === livestockId);
+  if (!item) throw new Error('That livestock entry no longer exists.');
+
+  await db.put('photos', {
+    id: livestockId,
+    blob,
+    width,
+    height,
+    bytes,
+    createdAt: new Date().toISOString(),
+  });
+
+  // The thumbnail rides along on the record so lists need no async lookup.
+  return saveLivestock({ ...item, thumb, hasPhoto: true });
+}
+
+/** Full-size image Blob for one entry, or null if only a thumbnail exists. */
+export async function loadPhoto(livestockId) {
+  const rows = await db.getAll('photos');
+  const hit = rows.find((r) => r.id === livestockId);
+  return hit ? hit.blob : null;
+}
+
+export async function deletePhoto(livestockId) {
+  const item = state.livestock.find((l) => l.id === livestockId);
+  await db.remove('photos', livestockId);
+  if (item) {
+    const next = { ...item };
+    delete next.thumb;
+    delete next.hasPhoto;
+    await saveLivestock(next);
+  }
+}
+
+/** Count and total bytes of stored full-size photos, for the storage readout. */
+export async function photoUsage() {
+  const rows = await db.getAll('photos');
+  return {
+    count: rows.length,
+    bytes: rows.reduce((n, r) => n + (Number(r.bytes) || (r.blob && r.blob.size) || 0), 0),
+  };
 }
 
 /* --- Storage durability --------------------------------------------------- */
