@@ -48,7 +48,11 @@ const DEFAULT_SETTINGS = {
   displayUnits: { salinity: 'sg', temperature: 'f' },
   seedVersion: 0,
   seededCollections: [],
+  lastBackupAt: null,
 };
+
+/* Nag for a backup once the newest one is older than this. */
+export const BACKUP_STALE_DAYS = 21;
 
 /* --- State ---------------------------------------------------------------- */
 
@@ -576,6 +580,61 @@ export function knownStores() {
   for (const l of state.livestock) if (l.source) names.add(l.source.trim());
   names.delete('');
   return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/* --- Storage durability --------------------------------------------------- */
+
+/**
+ * Ask the browser to keep this data even under storage pressure.
+ *
+ * The log exists only on this device, so eviction means losing it. Browsers
+ * grant persistence on their own criteria and may decline; the answer is
+ * reported in Settings rather than assumed either way.
+ *
+ * @returns {Promise<{supported:boolean, persisted:boolean, usage?:number, quota?:number}>}
+ */
+export async function storageHealth({ request = false } = {}) {
+  if (!navigator.storage || typeof navigator.storage.persisted !== 'function') {
+    return { supported: false, persisted: false };
+  }
+
+  let persisted = false;
+  try {
+    persisted = await navigator.storage.persisted();
+    if (!persisted && request && typeof navigator.storage.persist === 'function') {
+      persisted = await navigator.storage.persist();
+    }
+  } catch {
+    return { supported: false, persisted: false };
+  }
+
+  let usage;
+  let quota;
+  try {
+    if (typeof navigator.storage.estimate === 'function') {
+      ({ usage, quota } = await navigator.storage.estimate());
+    }
+  } catch { /* estimates are a nicety */ }
+
+  return { supported: true, persisted, usage, quota };
+}
+
+/** Days since the last exported backup, or null if there has never been one. */
+export function daysSinceBackup() {
+  const last = state.settings.lastBackupAt;
+  if (!last) return null;
+  const ms = Date.now() - new Date(last).getTime();
+  return Math.floor(ms / 86400000);
+}
+
+export function backupIsStale() {
+  const days = daysSinceBackup();
+  if (days === null) return true;
+  return days >= BACKUP_STALE_DAYS;
+}
+
+export function markBackedUp() {
+  return saveSettings({ lastBackupAt: new Date().toISOString() });
 }
 
 /* --- Backup / restore ----------------------------------------------------- */

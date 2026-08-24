@@ -7,7 +7,7 @@ import { focusParam } from './parameters.js';
 import { dueInfo } from './maintenance.js';
 import {
   esc, formatRelative, formatDate, formatDuration, daysBetween, monthKey,
-  money, moneyShort, plural, emptyState, toast,
+  money, moneyShort, plural, emptyState, toast, saveFile, todayISO,
 } from '../ui.js';
 
 /* A parameter untested for this long gets nudged on the dashboard. */
@@ -57,6 +57,7 @@ export function render(root) {
     </div>
 
     <div class="stack">
+      ${backupCard()}
       ${attentionCard(attention, stale)}
       ${maintenanceCard()}
 
@@ -113,6 +114,17 @@ export function render(root) {
     if (done) {
       await store.logTaskActivity(done.dataset.done, { action: 'Performed' });
       toast('Logged for today');
+      return;
+    }
+
+    if (event.target.closest('[data-act="backup"]')) {
+      // Built synchronously so iOS still counts this as the user gesture that
+      // lets the share sheet open.
+      const text = JSON.stringify(store.exportData(), null, 2);
+      const how = await saveFile(`reef-log-backup-${todayISO()}.json`, text);
+      if (how === 'cancelled') { toast('Backup cancelled'); return; }
+      await store.markBackedUp();
+      toast(how === 'shared' ? 'Backup saved' : 'Backup downloaded');
     }
   });
 }
@@ -201,6 +213,38 @@ function attentionCard(attention, stale) {
       </div>
       <div class="card__body" style="padding-top:6px;padding-bottom:10px">
         <ul style="font-size:13.5px">${items.join('')}</ul>
+      </div>
+    </section>`;
+}
+
+/**
+ * Nag for a backup once the log is worth losing. Silent on a tank with nothing
+ * in it, and silent while a recent backup exists.
+ */
+function backupCard() {
+  const hasData = store.readings().length || store.livestock().length || store.expenses().length;
+  if (!hasData || !store.backupIsStale()) return '';
+
+  const days = store.daysSinceBackup();
+  const line = days === null
+    ? 'This log has never been backed up.'
+    : `The last backup was ${formatRelative(store.settings().lastBackupAt)}.`;
+
+  return `
+    <section class="card" style="border-left:3px solid var(--warn)">
+      <div class="card__head">
+        <h2>Back up your log</h2>
+        <div class="spacer"></div>
+        <a href="#/settings" style="font-size:13px;font-weight:600;color:var(--accent)">Settings →</a>
+      </div>
+      <div class="card__body" style="padding-top:8px">
+        <p style="font-size:13.5px;color:var(--text-soft)">
+          ${esc(line)} It lives only on this device, so a backup is the only way to get it
+          back. On an iPhone, save it to iCloud Drive from the share sheet.
+        </p>
+        <div class="row" style="margin-top:12px">
+          <button class="btn btn--primary" data-act="backup">Back up now</button>
+        </div>
       </div>
     </section>`;
 }

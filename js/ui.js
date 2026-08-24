@@ -360,3 +360,34 @@ export function downloadFile(filename, text, mime = 'application/json') {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/**
+ * Hand a file to the user by the best route the device offers.
+ *
+ * On iOS a plain download link usually just opens the JSON in a tab, leaving
+ * nothing saved. The share sheet instead offers "Save to Files", which can put
+ * the backup in iCloud Drive — genuinely off the device, and free. Desktop
+ * browsers fall back to a normal download.
+ *
+ * Must be called directly from a click: iOS only allows share() during a user
+ * gesture, and any await beforehand forfeits it.
+ *
+ * @returns {Promise<'shared'|'cancelled'|'downloaded'>}
+ */
+export async function saveFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: filename });
+      return 'shared';
+    } catch (err) {
+      // The user dismissing the sheet is a choice, not a failure.
+      if (err && err.name === 'AbortError') return 'cancelled';
+      // Anything else (unsupported target, permission) falls through to a download.
+    }
+  }
+
+  downloadFile(filename, text, mime);
+  return 'downloaded';
+}

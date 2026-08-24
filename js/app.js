@@ -226,6 +226,10 @@ async function boot() {
     renderRoute();
   });
 
+  // The log lives only on this device, so ask for storage that survives
+  // pressure. Best-effort: Settings reports what the browser actually granted.
+  store.storageHealth({ request: true }).catch(() => {});
+
   registerServiceWorker();
 }
 

@@ -6,7 +6,7 @@ import * as charts from '../charts.js';
 import { APP_VERSION } from '../version.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  todayISO, downloadFile,
+  todayISO, saveFile, formatDate, formatRelative,
 } from '../ui.js';
 
 const CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'AUD', 'NZD', 'JPY', 'SEK', 'ZAR'];
@@ -82,6 +82,8 @@ export function render(root) {
         </div>
       </section>
 
+      <section class="card" id="storageCard"></section>
+
       <section class="card">
         <div class="card__head"><h2>Your data</h2></div>
         <div class="card__body">
@@ -136,6 +138,81 @@ export function render(root) {
   root.replaceChildren(el);
   wire(el, root);
   describeWorker(el.querySelector('#swState'));
+  renderStorage(el.querySelector('#storageCard'));
+}
+
+/* --- Storage safety card --------------------------------------------------- */
+
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/** Whether the page is running as an installed app rather than a browser tab. */
+const isInstalled = () => window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+
+function formatBytes(n) {
+  if (!Number.isFinite(n)) return '—';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+async function renderStorage(card) {
+  if (!card) return;
+
+  const health = await store.storageHealth();
+  const days = store.daysSinceBackup();
+  const stale = store.backupIsStale();
+  const installed = isInstalled();
+
+  const backupLine = days === null
+    ? 'Never backed up'
+    : `Last backup ${formatRelative(store.settings().lastBackupAt)} (${formatDate(store.settings().lastBackupAt)})`;
+
+  // On iOS the home-screen install is what exempts the app from Safari's
+  // seven-day storage clear-out, so it is the single most important step.
+  const installWarning = isIOS() && !installed
+    ? `<p style="font-size:13.5px;color:var(--bad);margin-bottom:12px">
+         <b>Add this to your Home Screen.</b> Run from a Safari tab, iOS clears the
+         app's stored data after about a week of not opening it. Installed to the Home
+         Screen it is exempt. Tap Share, then Add to Home Screen.
+       </p>`
+    : '';
+
+  const rows = [
+    ['Backup', backupLine, stale ? 'bad' : 'ok'],
+    ['Stored on device', formatBytes(health.usage), ''],
+    health.supported
+      ? ['Eviction protection', health.persisted ? 'Granted — the browser will keep this data' : 'Not granted — the browser may reclaim it if space runs low', health.persisted ? 'ok' : 'warn']
+      : ['Eviction protection', 'Not reportable in this browser', ''],
+    ['Installed as an app', installed ? 'Yes' : 'No — running in a browser tab', installed ? 'ok' : 'warn'],
+  ];
+
+  card.innerHTML = `
+    <div class="card__head">
+      <h2>Keeping your data safe</h2>
+      <div class="spacer"></div>
+      <span class="badge badge--${stale ? 'bad' : 'ok'}">${stale ? 'Back up now' : 'Backed up'}</span>
+    </div>
+    <div class="card__body">
+      ${installWarning}
+      <div class="lscard__facts" style="font-size:13.5px;gap:6px">
+        ${rows.map(([label, value, tone]) => `
+          <div style="display:flex;gap:8px;align-items:baseline">
+            ${tone ? `<span class="dot dot--${tone}" style="margin-top:6px"></span>` : '<span style="width:8px"></span>'}
+            <span style="flex:1"><span class="muted">${esc(label)}:</span> <b>${esc(value)}</b></span>
+          </div>`).join('')}
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn--primary" data-act="export">Back up now</button>
+      </div>
+      <p class="field__hint" style="margin-top:12px">
+        Your log is stored only on this device. On an iPhone, <b>Back up now</b> opens the
+        share sheet — choose <b>Save to Files</b> and pick iCloud Drive to keep a copy off
+        the device for free. Reef Log will remind you if it has been more than
+        ${store.BACKUP_STALE_DAYS} days.
+      </p>
+    </div>`;
 }
 
 /** Report whether the offline copy is registered, so a stale device is obvious. */
@@ -355,10 +432,18 @@ async function handleAction(action, el, root) {
     }
 
     case 'export': {
+      // exportData is synchronous on purpose: awaiting before saveFile would
+      // forfeit the user gesture iOS requires to open the share sheet.
       const payload = store.exportData();
-      const stamp = todayISO();
-      downloadFile(`reef-log-backup-${stamp}.json`, JSON.stringify(payload, null, 2));
-      toast('Backup downloaded');
+      const text = JSON.stringify(payload, null, 2);
+      const name = `reef-log-backup-${todayISO()}.json`;
+
+      const how = await saveFile(name, text);
+      if (how === 'cancelled') { toast('Backup cancelled'); return; }
+
+      await store.markBackedUp();
+      toast(how === 'shared' ? 'Backup saved' : 'Backup downloaded');
+      renderStorage(el.querySelector('#storageCard'));
       return;
     }
 
