@@ -359,8 +359,13 @@ export async function deleteTank(tankId) {
 
   const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
 
+  // The tank's livestock take their photos with them, or the blobs would
+  // linger in storage with no entry left to reach them from.
+  const photoIds = state.livestock.filter((l) => l.tankId === tankId).map((l) => l.id);
+
   await Promise.all([
     db.remove('tanks', tankId),
+    db.removeMany('photos', photoIds),
     ...owned.map((name) => db.removeMany(name, state[name].filter((r) => r.tankId === tankId).map((r) => r.id))),
   ]);
 
@@ -759,9 +764,19 @@ export async function importData(payload) {
     tasks: d.tasks || [],
     activities: d.activities || [],
     meta: d.meta || [],
+    // No photos key on purpose: backups carry thumbnails only, and replaceAll
+    // leaves stores it is not given alone, so stored full-size photos survive
+    // a restore. Orphans are pruned just below instead.
   });
 
   await init();
+
+  // Photos are keyed by livestock id. Any blob whose entry did not survive the
+  // import has nothing pointing at it and would sit invisible forever.
+  const keep = new Set(state.livestock.map((l) => l.id));
+  const orphaned = (await db.getAll('photos')).filter((p) => !keep.has(p.id)).map((p) => p.id);
+  if (orphaned.length) await db.removeMany('photos', orphaned);
+
   emit();
 }
 

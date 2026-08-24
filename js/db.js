@@ -124,16 +124,21 @@ export function clearAll() {
   });
 }
 
-/** Replace the entire contents of every store in one atomic transaction (used by import). */
+/**
+ * Replace the contents of the named stores in one atomic transaction (used by
+ * import). Only stores present as keys in `data` are touched: clearing every
+ * store would also wipe ones the payload knows nothing about — restoring a
+ * backup, which carries no photos, used to delete every stored photo this way.
+ */
 export function replaceAll(data) {
-  return write(STORE_NAMES, (tx) => {
-    for (const name of STORE_NAMES) {
+  const names = STORE_NAMES.filter((n) => Array.isArray(data[n]));
+  if (!names.length) return Promise.resolve();
+
+  return write(names, (tx) => {
+    for (const name of names) {
       const store = tx.objectStore(name);
       store.clear();
-      const rows = data[name];
-      if (Array.isArray(rows)) {
-        for (const row of rows) store.put(row);
-      }
+      for (const row of data[name]) store.put(row);
     }
   });
 }
