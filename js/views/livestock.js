@@ -4,6 +4,7 @@
 
 import * as store from '../store.js';
 import * as charts from '../charts.js';
+import { SPECIES_PHOTOS, SPECIES_PHOTO_DIR } from '../species-photos.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
   formatDate, formatDuration, todayISO, money, emptyState, plural, processPhoto,
@@ -129,6 +130,32 @@ function fillList(list, all, currency) {
   list.innerHTML = `<div class="grid grid--cards">${visible.map((l) => card(l, currency)).join('')}</div>`;
 }
 
+/* Precedence: your own photo, then the stock species photo, then the category
+   icon. Adding a photo therefore replaces the placeholder with no extra step. */
+
+export function speciesPhotoFor(item) {
+  const entry = SPECIES_PHOTOS[item.id];
+  return entry ? { ...entry, src: SPECIES_PHOTO_DIR + entry.file } : null;
+}
+
+function thumbFor(item, cat) {
+  if (item.thumb) {
+    return `<button type="button" class="avatar avatar--photo" data-photo="${esc(item.id)}" aria-label="View photo of ${esc(item.name)}">
+              <img src="${esc(item.thumb)}" alt="" loading="lazy">
+            </button>`;
+  }
+
+  const species = speciesPhotoFor(item);
+  if (species) {
+    return `<button type="button" class="avatar avatar--photo is-stock" data-photo="${esc(item.id)}"
+                    aria-label="Stock photo of ${esc(item.name)} — not your animal">
+              <img src="${esc(species.src)}" alt="" loading="lazy">
+            </button>`;
+  }
+
+  return `<span class="avatar" aria-hidden="true">${cat.icon}</span>`;
+}
+
 function card(item, currency) {
   const cat = catById(item.category);
   const status = item.status || 'alive';
@@ -145,11 +172,7 @@ function card(item, currency) {
   return `
     <article class="lscard ${status === 'alive' ? '' : 'is-gone'}">
       <div class="lscard__top">
-        ${item.thumb
-          ? `<button type="button" class="avatar avatar--photo" data-photo="${esc(item.id)}" aria-label="View photo of ${esc(item.name)}">
-               <img src="${esc(item.thumb)}" alt="" loading="lazy">
-             </button>`
-          : `<span class="avatar" aria-hidden="true">${cat.icon}</span>`}
+        ${thumbFor(item, cat)}
         <div style="flex:1;min-width:0">
           <div class="lscard__name">${esc(item.name || 'Unnamed')}${qty > 1 ? ` <span class="muted">×${qty}</span>` : ''}</div>
           ${item.scientificName ? `<div class="lscard__sci">${esc(item.scientificName)}</div>` : ''}
@@ -273,18 +296,37 @@ async function openPhoto(livestockId) {
   const item = store.livestock().find((l) => l.id === livestockId);
   if (!item) return;
 
-  const blob = await store.loadPhoto(livestockId);
-  const url = blob ? URL.createObjectURL(blob) : item.thumb;
+  const species = item.thumb ? null : speciesPhotoFor(item);
+  const blob = item.thumb ? await store.loadPhoto(livestockId) : null;
+
+  let url;
+  if (blob) url = URL.createObjectURL(blob);
+  else if (item.thumb) url = item.thumb;
+  else if (species) url = species.src;
+  else return;
+
+  // CC BY and CC BY-SA require the photographer and licence to be named
+  // wherever the image appears, so the credit is part of the view, not a footnote.
+  const credit = species
+    ? `<p class="photocredit">
+         <b>Stock photo, not your animal.</b> ${esc(species.artist || 'Unknown')} ·
+         ${esc(species.licence)} ·
+         <a href="${esc(species.source)}" target="_blank" rel="noopener noreferrer">source</a><br>
+         Add your own photo and this is replaced.
+       </p>`
+    : (blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>');
 
   const modal = openModal({
     title: item.name || 'Photo',
-    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">
-           ${blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>'}`,
-    footer: `
-      <button class="btn btn--danger" data-act="remove-photo">Remove</button>
-      <span class="spacer"></span>
-      <button class="btn" data-act="replace-photo">Replace</button>
-      <button class="btn btn--primary" data-close>Done</button>`,
+    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">${credit}`,
+    footer: species
+      ? `<button class="btn btn--primary" data-act="replace-photo">Use my own photo</button>
+         <span class="spacer"></span>
+         <button class="btn" data-close>Done</button>`
+      : `<button class="btn btn--danger" data-act="remove-photo">Remove</button>
+         <span class="spacer"></span>
+         <button class="btn" data-act="replace-photo">Replace</button>
+         <button class="btn btn--primary" data-close>Done</button>`,
     onClose: () => { if (blob) URL.revokeObjectURL(url); },
   });
 
