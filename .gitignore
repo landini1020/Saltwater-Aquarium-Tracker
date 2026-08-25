@@ -14,3 +14,8 @@ Desktop.ini
 # Local data backups exported from the app
 backups/
 *.reeflog.json
+
+# Desktop build output
+desktop/bin/
+desktop/obj/
+desktop/dist/

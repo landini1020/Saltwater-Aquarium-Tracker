@@ -484,6 +484,17 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
   background: var(--bg-sunk);
   border-radius: var(--r-sm);
 }
+
+/* A control with more than three or four options will not fit a phone, so let
+   it scroll sideways inside its own box rather than stretching the page. */
+.segscroll {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.segscroll::-webkit-scrollbar { display: none; }
+.segscroll .seg { flex: none; }
 .seg button {
   padding: 5px 12px;
   font-size: 13px; font-weight: 600;
@@ -691,6 +702,43 @@ details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::before { content: '▸ '; display: inline-block; transition: transform .15s; }
 details[open] > summary::before { content: '▾ '; }
+
+/* --- Dosing calculator ---------------------------------------------------- */
+
+.calcout {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.calcout__figure {
+  font-size: 30px; font-weight: 700; letter-spacing: -.02em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.calcout__sub { font-size: 13.5px; color: var(--text-soft); margin-top: 2px; }
+.calcout__spoon { font-size: 12.5px; color: var(--text-faint); margin-top: 6px; }
+
+.calcnote {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 12.5px; line-height: 1.5;
+  background: var(--bg-sunk);
+  border-radius: var(--r-sm);
+  color: var(--text-soft);
+}
+.calcnote--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-left: 3px solid var(--warn);
+}
+.calcnote b { color: inherit; }
+
+.calcworkings {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
 
 /* --- Bars (expense breakdown) -------------------------------------------- */
 

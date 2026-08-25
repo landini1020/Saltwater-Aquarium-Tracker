@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <AssemblyName>ReefLog</AssemblyName>
+    <RootNamespace>ReefLog</RootNamespace>
+    <Version>1.9.0</Version>
+    <Product>Reef Log</Product>
+    <Company>Reef Log</Company>
+    <Description>Saltwater aquarium log</Description>
+
+    <ApplicationIcon>ReefLog.ico</ApplicationIcon>
+
+    <!-- One file, no installer, no .NET needed on the target machine. Trimming
+         is off because WinForms does not trim reliably. -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The control only; the runtime itself ships with Windows 11 and with
+         any machine that has Edge installed. -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+
+</Project>

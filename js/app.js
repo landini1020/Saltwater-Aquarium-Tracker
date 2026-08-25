@@ -7,6 +7,7 @@ import { $, $$, esc, toast } from './ui.js';
 import * as dashboard from './views/dashboard.js';
 import * as parameters from './views/parameters.js';
 import * as maintenance from './views/maintenance.js';
+import * as calculator from './views/calculator.js';
 import * as livestock from './views/livestock.js';
 import * as gear from './views/gear.js';
 import * as expenses from './views/expenses.js';
@@ -16,6 +17,7 @@ const ROUTES = {
   dashboard: { view: dashboard, title: 'Dashboard' },
   parameters: { view: parameters, title: 'Parameters' },
   maintenance: { view: maintenance, title: 'Maintenance' },
+  calculator: { view: calculator, title: 'Dosing calculator' },
   livestock: { view: livestock, title: 'Livestock' },
   gear: { view: gear, title: 'Gear' },
   expenses: { view: expenses, title: 'Expenses' },
