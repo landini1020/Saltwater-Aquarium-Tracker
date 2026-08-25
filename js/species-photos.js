@@ -65,9 +65,9 @@ export const SPECIES_PHOTOS = {
   },
   'a7f3c1e0-0001-4000-8000-000000000019': {
     file: 'sinularia-flexibilis.jpg',
-    artist: "Rickard Zerpe",
-    licence: 'CC BY 2.0',
-    source: 'https://commons.wikimedia.org/wiki/File:Reef_scape._Spaghetti_finger_leather_coral_(Sinularia_flexibilis).jpg',
+    artist: "Nhobgood Nick Hobgood",
+    licence: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Sinularia_flexibilis_(Slimy_leather_coral).jpg',
   },
   'a7f3c1e0-0001-4000-8000-000000000024': {
     file: 'plerogyra-sinuosa.jpg',
@@ -161,15 +161,15 @@ export const SPECIES_PHOTOS = {
   },
   'a7f3c1e0-0001-4000-8000-000000000065': {
     file: 'macrodactyla-doreensis.jpg',
-    artist: "cs:ŠJů",
-    licence: 'CC BY-SA 3.0',
-    source: 'https://commons.wikimedia.org/wiki/File:Macrodactyla_doreensis_at_the_Botanick%C3%A1_zahrada_Liberec_(11).jpg',
+    artist: "Diego Delso",
+    licence: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:An%C3%A9mona_(Radianthus_doreensis),_Anilao,_Filipinas,_2023-08-24,_DD_178.jpg',
   },
   'a7f3c1e0-0001-4000-8000-000000000074': {
     file: 'macrodactyla-doreensis.jpg',
-    artist: "cs:ŠJů",
-    licence: 'CC BY-SA 3.0',
-    source: 'https://commons.wikimedia.org/wiki/File:Macrodactyla_doreensis_at_the_Botanick%C3%A1_zahrada_Liberec_(11).jpg',
+    artist: "Diego Delso",
+    licence: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:An%C3%A9mona_(Radianthus_doreensis),_Anilao,_Filipinas,_2023-08-24,_DD_178.jpg',
   },
   'a7f3c1e0-0001-4000-8000-000000000075': {
     file: 'tridacna-maxima.jpg',
