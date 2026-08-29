@@ -3,6 +3,8 @@
 import * as store from '../store.js';
 import * as charts from '../charts.js';
 import { equipmentIcon } from '../equipment-icons.js';
+import { EQUIPMENT_PHOTOS, EQUIPMENT_PHOTO_DIR } from '../equipment-photos.js';
+import { licenceUrl } from '../licences.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
   formatDate, formatDuration, todayISO, emptyState, plural, processPhoto,
@@ -53,14 +55,29 @@ export function render(root) {
   wire(el, root);
 }
 
-/* Your own photo wins; otherwise the drawn type symbol. Unlike livestock there
-   is no stock photo in between — see the note in js/equipment-icons.js. */
+export function stockPhotoFor(item) {
+  const entry = EQUIPMENT_PHOTOS[item.id];
+  return entry ? { ...entry, src: EQUIPMENT_PHOTO_DIR + entry.file } : null;
+}
+
+/* Your own photo, then a stock photo if one exists for this exact model, then
+   the drawn type symbol. Only one item has a stock photo — see the note in
+   js/equipment-photos.js. */
 function thumbFor(g) {
   if (g.thumb) {
     return `<button type="button" class="avatar avatar--photo" data-photo="${esc(g.id)}" aria-label="View photo of ${esc(g.name)}">
               <img src="${esc(g.thumb)}" alt="" loading="lazy">
             </button>`;
   }
+
+  const stock = stockPhotoFor(g);
+  if (stock) {
+    return `<button type="button" class="avatar avatar--photo is-stock" data-photo="${esc(g.id)}"
+                    aria-label="Stock photo of ${esc(g.name)} — not your unit">
+              <img src="${esc(stock.src)}" alt="" loading="lazy">
+            </button>`;
+  }
+
   return `<span class="avatar gearicon" aria-hidden="true">${equipmentIcon(g)}</span>`;
 }
 
@@ -198,19 +215,43 @@ function pickPhoto(equipmentId) {
 /** Full-size viewer. The Blob URL is released when the dialog closes. */
 async function openPhoto(equipmentId) {
   const item = store.equipment().find((g) => g.id === equipmentId);
-  if (!item || !item.thumb) return;
+  if (!item) return;
 
-  const blob = await store.loadPhoto(equipmentId);
-  const url = blob ? URL.createObjectURL(blob) : item.thumb;
+  const stock = item.thumb ? null : stockPhotoFor(item);
+  const blob = item.thumb ? await store.loadPhoto(equipmentId) : null;
+
+  let url;
+  if (blob) url = URL.createObjectURL(blob);
+  else if (item.thumb) url = item.thumb;
+  else if (stock) url = stock.src;
+  else return;
+
+  // CC BY-SA requires the photographer, the licence with a link to it, and any
+  // changes to be named wherever the image appears — so the credit is part of
+  // the view, not a footnote.
+  const deed = stock ? licenceUrl(stock.licence) : '';
+  const credit = stock
+    ? `<p class="photocredit">
+         <b>Stock photo, not your unit.</b> ${esc(stock.artist || 'Unknown')} ·
+         ${deed
+           ? `<a href="${esc(deed)}" target="_blank" rel="noopener noreferrer">${esc(stock.licence)}</a>`
+           : esc(stock.licence)} ·
+         <a href="${esc(stock.source)}" target="_blank" rel="noopener noreferrer">source</a>${stock.changes ? ` · ${esc(stock.changes)}` : ''}<br>
+         Add your own photo and this is replaced.
+       </p>`
+    : (blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>');
 
   const modal = openModal({
     title: item.name || 'Photo',
-    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">
-           ${blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>'}`,
-    footer: `<button class="btn btn--danger" data-act="remove-photo">Remove</button>
-             <span class="spacer"></span>
-             <button class="btn" data-act="replace-photo">Replace</button>
-             <button class="btn btn--primary" data-close>Done</button>`,
+    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">${credit}`,
+    footer: stock
+      ? `<button class="btn btn--primary" data-act="replace-photo">Use my own photo</button>
+         <span class="spacer"></span>
+         <button class="btn" data-close>Done</button>`
+      : `<button class="btn btn--danger" data-act="remove-photo">Remove</button>
+         <span class="spacer"></span>
+         <button class="btn" data-act="replace-photo">Replace</button>
+         <button class="btn btn--primary" data-close>Done</button>`,
     onClose: () => { if (blob) URL.revokeObjectURL(url); },
   });
 

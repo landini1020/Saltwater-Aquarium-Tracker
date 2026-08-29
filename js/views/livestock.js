@@ -5,6 +5,7 @@
 import * as store from '../store.js';
 import * as charts from '../charts.js';
 import { SPECIES_PHOTOS, SPECIES_PHOTO_DIR } from '../species-photos.js';
+import { licenceUrl } from '../licences.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
   formatDate, formatDuration, todayISO, money, emptyState, plural, processPhoto,
@@ -307,10 +308,13 @@ async function openPhoto(livestockId) {
 
   // CC BY and CC BY-SA require the photographer and licence to be named
   // wherever the image appears, so the credit is part of the view, not a footnote.
+  const deed = species ? licenceUrl(species.licence) : '';
   const credit = species
     ? `<p class="photocredit">
          <b>Stock photo, not your animal.</b> ${esc(species.artist || 'Unknown')} ·
-         ${esc(species.licence)} ·
+         ${deed
+           ? `<a href="${esc(deed)}" target="_blank" rel="noopener noreferrer">${esc(species.licence)}</a>`
+           : esc(species.licence)} ·
          <a href="${esc(species.source)}" target="_blank" rel="noopener noreferrer">source</a><br>
          Add your own photo and this is replaced.
        </p>`
