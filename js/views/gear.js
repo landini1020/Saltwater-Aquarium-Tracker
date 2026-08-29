@@ -2,6 +2,7 @@
 
 import * as store from '../store.js';
 import * as charts from '../charts.js';
+import { equipmentIcon } from '../equipment-icons.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
   formatDate, formatDuration, todayISO, emptyState, plural,
@@ -74,7 +75,7 @@ function renderEquipment(list, gear) {
     return `
       <article class="lscard ${retired ? 'is-gone' : ''}">
         <div class="lscard__top">
-          <span class="avatar" aria-hidden="true">\u{2699}\u{FE0F}</span>
+          <span class="avatar gearicon" aria-hidden="true">${equipmentIcon(g)}</span>
           <div style="flex:1;min-width:0">
             <div class="lscard__name">${esc(g.name)}${qty > 1 ? ` <span class="muted">×${qty}</span>` : ''}</div>
             ${g.model ? `<div class="lscard__sci" style="font-style:normal">${esc(g.model)}</div>` : ''}

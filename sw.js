@@ -4,7 +4,7 @@
    All user data lives in IndexedDB and is never touched here. */
 
 /* Keep this in step with APP_VERSION in js/version.js. */
-const CACHE = 'reef-log-v1.9.2';
+const CACHE = 'reef-log-v1.10.0';
 
 const SHELL = [
   './',
@@ -17,6 +17,7 @@ const SHELL = [
   './js/seed-data.js',
   './js/version.js',
   './js/species-photos.js',
+  './js/equipment-icons.js',
   './js/params.js',
   './js/charts.js',
   './js/ui.js',

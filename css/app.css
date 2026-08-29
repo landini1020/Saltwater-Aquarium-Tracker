@@ -670,6 +670,20 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
 .avatar--photo.is-stock img { opacity: .78; }
 .avatar--photo.is-stock:hover img { opacity: 1; }
 
+/* Equipment carries a drawn symbol for its type rather than a photo — see the
+   note in js/equipment-icons.js. */
+.gearicon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--line);
+  color: var(--accent);
+}
+.gearicon__svg {
+  width: 22px; height: 22px;
+  fill: none; stroke: currentColor;
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+}
+.is-gone .gearicon { color: var(--text-faint); }
+
 .photoview {
   display: block;
   width: 100%;
