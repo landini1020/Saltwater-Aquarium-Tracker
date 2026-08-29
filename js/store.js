@@ -531,7 +531,12 @@ function drop(collection, id) {
 }
 
 export const saveEquipment = (record) => upsert('equipment', record);
-export const deleteEquipment = (id) => drop('equipment', id);
+
+/** Equipment can own a photo, so drop it too or its bytes linger unreferenced. */
+export async function deleteEquipment(id) {
+  await db.remove('photos', id).catch(() => {});
+  return drop('equipment', id);
+}
 
 export const saveSupplement = (record) => upsert('supplements', record);
 export const deleteSupplement = (id) => drop('supplements', id);
@@ -592,18 +597,35 @@ export function knownStores() {
 
 /* --- Photos ---------------------------------------------------------------- */
 
-/* A livestock record carries only `thumb`, a small data URL, so the list renders
+/* A record carries only `thumb`, a small data URL, so the list renders
    instantly and a backup still looks right after a restore. The full-size image
-   is a Blob in its own store, keyed by the livestock id, and stays on the
+   is a Blob in its own store, keyed by the owning record's id, and stays on the
    device — including it in the backup would push the file past what a phone can
-   share. The originals remain in your photo library regardless. */
+   share. The originals remain in your photo library regardless.
 
-export async function savePhoto(livestockId, { thumb, blob, width, height, bytes }) {
-  const item = state.livestock.find((l) => l.id === livestockId);
-  if (!item) throw new Error('That livestock entry no longer exists.');
+   Livestock and equipment can both own a photo. Ids are UUIDs, so the owner is
+   found by looking rather than passed in, and every existing call site keeps
+   working unchanged. */
+
+const PHOTO_OWNERS = [
+  { collection: 'livestock', save: (r) => saveLivestock(r) },
+  { collection: 'equipment', save: (r) => saveEquipment(r) },
+];
+
+function photoOwner(id) {
+  for (const owner of PHOTO_OWNERS) {
+    const item = state[owner.collection].find((r) => r.id === id);
+    if (item) return { item, save: owner.save };
+  }
+  return null;
+}
+
+export async function savePhoto(ownerId, { thumb, blob, width, height, bytes }) {
+  const owner = photoOwner(ownerId);
+  if (!owner) throw new Error('That entry no longer exists.');
 
   await db.put('photos', {
-    id: livestockId,
+    id: ownerId,
     blob,
     width,
     height,
@@ -612,24 +634,24 @@ export async function savePhoto(livestockId, { thumb, blob, width, height, bytes
   });
 
   // The thumbnail rides along on the record so lists need no async lookup.
-  return saveLivestock({ ...item, thumb, hasPhoto: true });
+  return owner.save({ ...owner.item, thumb, hasPhoto: true });
 }
 
 /** Full-size image Blob for one entry, or null if only a thumbnail exists. */
-export async function loadPhoto(livestockId) {
+export async function loadPhoto(ownerId) {
   const rows = await db.getAll('photos');
-  const hit = rows.find((r) => r.id === livestockId);
+  const hit = rows.find((r) => r.id === ownerId);
   return hit ? hit.blob : null;
 }
 
-export async function deletePhoto(livestockId) {
-  const item = state.livestock.find((l) => l.id === livestockId);
-  await db.remove('photos', livestockId);
-  if (item) {
-    const next = { ...item };
+export async function deletePhoto(ownerId) {
+  const owner = photoOwner(ownerId);
+  await db.remove('photos', ownerId);
+  if (owner) {
+    const next = { ...owner.item };
     delete next.thumb;
     delete next.hasPhoto;
-    await saveLivestock(next);
+    await owner.save(next);
   }
 }
 

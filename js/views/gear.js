@@ -5,7 +5,7 @@ import * as charts from '../charts.js';
 import { equipmentIcon } from '../equipment-icons.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
-  formatDate, formatDuration, todayISO, emptyState, plural,
+  formatDate, formatDuration, todayISO, emptyState, plural, processPhoto,
 } from '../ui.js';
 
 let tab = 'equipment';
@@ -53,6 +53,17 @@ export function render(root) {
   wire(el, root);
 }
 
+/* Your own photo wins; otherwise the drawn type symbol. Unlike livestock there
+   is no stock photo in between — see the note in js/equipment-icons.js. */
+function thumbFor(g) {
+  if (g.thumb) {
+    return `<button type="button" class="avatar avatar--photo" data-photo="${esc(g.id)}" aria-label="View photo of ${esc(g.name)}">
+              <img src="${esc(g.thumb)}" alt="" loading="lazy">
+            </button>`;
+  }
+  return `<span class="avatar gearicon" aria-hidden="true">${equipmentIcon(g)}</span>`;
+}
+
 function renderEquipment(list, gear) {
   const visible = gear
     .filter((g) => showRetired || (g.status || 'active') === 'active')
@@ -75,7 +86,7 @@ function renderEquipment(list, gear) {
     return `
       <article class="lscard ${retired ? 'is-gone' : ''}">
         <div class="lscard__top">
-          <span class="avatar gearicon" aria-hidden="true">${equipmentIcon(g)}</span>
+          ${thumbFor(g)}
           <div style="flex:1;min-width:0">
             <div class="lscard__name">${esc(g.name)}${qty > 1 ? ` <span class="muted">×${qty}</span>` : ''}</div>
             ${g.model ? `<div class="lscard__sci" style="font-style:normal">${esc(g.model)}</div>` : ''}
@@ -94,6 +105,7 @@ function renderEquipment(list, gear) {
 
         <div class="lscard__acts">
           <button class="btn btn--sm" data-edit="${esc(g.id)}">Edit</button>
+          <button class="btn btn--sm" data-addphoto="${esc(g.id)}">${g.thumb ? 'Replace photo' : 'Add photo'}</button>
           <div class="spacer"></div>
           <button class="iconbtn" data-del="${esc(g.id)}" aria-label="Delete ${esc(g.name)}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
@@ -147,6 +159,84 @@ function renderSupplements(list, supps) {
   }).join('')}</div>`;
 }
 
+/* --- Photos ---------------------------------------------------------------- */
+
+/*
+ * A file input rather than getUserMedia, for the same reason as livestock: on
+ * iOS it offers Take Photo and Photo Library in one sheet, and hands back a
+ * still the OS has already oriented and converted out of HEIC.
+ */
+function pickPhoto(equipmentId) {
+  const item = store.equipment().find((g) => g.id === equipmentId);
+  if (!item) return;
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.hidden = true;
+  document.body.append(input);
+
+  input.addEventListener('change', async () => {
+    const file = input.files && input.files[0];
+    input.remove();
+    if (!file) return;
+
+    toast('Processing photo…');
+    try {
+      const sizeKey = store.settings().photoSize || 'high';
+      const processed = await processPhoto(file, sizeKey);
+      await store.savePhoto(equipmentId, processed);
+      toast(`Photo added · ${processed.width}×${processed.height}, ${Math.round(processed.bytes / 1024)} KB`);
+    } catch (err) {
+      toast(err.message || 'That photo could not be added.');
+    }
+  }, { once: true });
+
+  input.click();
+}
+
+/** Full-size viewer. The Blob URL is released when the dialog closes. */
+async function openPhoto(equipmentId) {
+  const item = store.equipment().find((g) => g.id === equipmentId);
+  if (!item || !item.thumb) return;
+
+  const blob = await store.loadPhoto(equipmentId);
+  const url = blob ? URL.createObjectURL(blob) : item.thumb;
+
+  const modal = openModal({
+    title: item.name || 'Photo',
+    body: `<img class="photoview" src="${esc(url)}" alt="${esc(item.name || '')}">
+           ${blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>'}`,
+    footer: `<button class="btn btn--danger" data-act="remove-photo">Remove</button>
+             <span class="spacer"></span>
+             <button class="btn" data-act="replace-photo">Replace</button>
+             <button class="btn btn--primary" data-close>Done</button>`,
+    onClose: () => { if (blob) URL.revokeObjectURL(url); },
+  });
+
+  modal.footer.addEventListener('click', async (event) => {
+    const act = event.target.closest('[data-act]');
+    if (!act) return;
+
+    if (act.dataset.act === 'replace-photo') {
+      closeModal();
+      pickPhoto(equipmentId);
+      return;
+    }
+
+    if (act.dataset.act === 'remove-photo') {
+      closeModal();
+      const ok = await confirmDialog({
+        title: 'Remove this photo?',
+        message: 'The photo is deleted from Reef Log and the item goes back to its type symbol. The original stays in your photo library.',
+        confirmLabel: 'Remove',
+        danger: true,
+      });
+      if (ok) { await store.deletePhoto(equipmentId); toast('Photo removed'); }
+    }
+  });
+}
+
 /* --- Events --------------------------------------------------------------- */
 
 function wire(el, root) {
@@ -165,6 +255,12 @@ function wire(el, root) {
       else openSupplementForm(store.supplements().find((s) => s.id === edit.dataset.edit));
       return;
     }
+
+    const addPhoto = event.target.closest('[data-addphoto]');
+    if (addPhoto) { pickPhoto(addPhoto.dataset.addphoto); return; }
+
+    const viewPhoto = event.target.closest('[data-photo]');
+    if (viewPhoto) { openPhoto(viewPhoto.dataset.photo); return; }
 
     const del = event.target.closest('[data-del]');
     if (del) {
