@@ -1,10 +1,11 @@
 /* Reef Log service worker.
-   Precaches the app shell so the app opens offline, then serves same-origin GETs
-   stale-while-revalidate so updates land on the next visit.
+   Precaches the app shell so the app opens offline. Code is served network-first
+   so a deploy lands on this load, falling back to the cache when offline; photos
+   and icons are served cache-first because their contents never change.
    All user data lives in IndexedDB and is never touched here. */
 
 /* Keep this in step with APP_VERSION in js/version.js. */
-const CACHE = 'reef-log-v1.13.0';
+const CACHE = 'reef-log-v1.14.0';
 
 const SHELL = [
   './',
@@ -75,18 +76,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const save = (res) => {
+    if (res && res.status === 200 && res.type === 'basic') {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(req, copy));
+    }
+    return res;
+  };
+
+  /* App code goes network-first so a deploy lands on this load rather than the
+     next one. This was stale-while-revalidate, which always served the previous
+     version's code once — new species photos were mapped in the JS but the
+     browser was still running the older map, so those entries fell back to the
+     category icon and looked like missing photos. Offline still works: a failed
+     fetch falls back to the cached copy. */
+  if (/\.(?:js|css|html|webmanifest)$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(req).then(save).catch(() => caches.match(req).then((r) => r || Response.error()))
+    );
+    return;
+  }
+
+  /* Photos and icons are cache-first — their contents never change, only their
+     names, so there is nothing to revalidate and no reason to wait on it. */
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.status === 200 && res.type === 'basic') {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
+    caches.match(req).then((cached) => cached || fetch(req).then(save))
   );
 });
