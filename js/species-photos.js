@@ -83,9 +83,9 @@ export const SPECIES_PHOTOS = {
   },
   'a7f3c1e0-0001-4000-8000-000000000036': {
     file: 'capnella-impricata.jpg',
-    artist: "Emőke Dénes",
-    licence: 'CC BY-SA 4.0',
-    source: 'https://commons.wikimedia.org/wiki/File:Vi_-_Capnella_sp._-_1.jpg',
+    artist: "Bondolo",
+    licence: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Capnella_sp.JPG',
   },
   'a7f3c1e0-0001-4000-8000-000000000040': {
     file: 'lobophyllia-serratus.jpg',
