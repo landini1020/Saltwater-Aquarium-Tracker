@@ -89,9 +89,9 @@ export const SPECIES_PHOTOS = {
   },
   'a7f3c1e0-0001-4000-8000-000000000040': {
     file: 'lobophyllia-serratus.jpg',
-    artist: "Michelle Jonker",
-    licence: 'CC BY 4.0',
-    source: 'https://commons.wikimedia.org/wiki/File:Lobophyllia_flabelliformis.JPG',
+    artist: "Diego Delso",
+    licence: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Coral_(Lobophyllia_hemprichii),_Anilao,_Filipinas,_2023-08-24,_DD_46.jpg',
   },
   'a7f3c1e0-0001-4000-8000-000000000043': {
     file: 'euphyllia-glabrescens.jpg',
