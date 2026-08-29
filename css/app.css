@@ -684,6 +684,36 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
 }
 .is-gone .gearicon { color: var(--text-faint); }
 
+/* The brand as its own name in its own colour — see js/equipment-brands.js for
+   why this is type and not a logo. One colour value has to hold up on both the
+   light and the dark card, so it tints rather than fills. */
+/* One brand, two values, picked to clear 4.5:1 on whichever card it lands on.
+   Follows the same three theme states as the rest of the sheet: light by
+   default, dark by preference unless overridden, dark when chosen outright. */
+.brandmark, .gearicon.is-branded { --brand: var(--brand-l, 120 130 140); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brandmark,
+  :root:not([data-theme="light"]) .gearicon.is-branded { --brand: var(--brand-d, 150 160 170); }
+}
+:root[data-theme="dark"] .brandmark,
+:root[data-theme="dark"] .gearicon.is-branded { --brand: var(--brand-d, 150 160 170); }
+
+.brandmark {
+  font-size: 10px; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: rgb(var(--brand));
+  margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gearicon.is-branded {
+  color: rgb(var(--brand));
+  background: rgb(var(--brand) / .13);
+  border-color: rgb(var(--brand) / .32);
+}
+.is-gone .brandmark,
+.is-gone .gearicon.is-branded { color: var(--text-faint); }
+.is-gone .gearicon.is-branded { background: var(--bg-sunk); border-color: var(--line); }
+
 .photoview {
   display: block;
   width: 100%;

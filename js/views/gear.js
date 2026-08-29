@@ -4,6 +4,7 @@ import * as store from '../store.js';
 import * as charts from '../charts.js';
 import { equipmentIcon } from '../equipment-icons.js';
 import { EQUIPMENT_PHOTOS, EQUIPMENT_PHOTO_DIR } from '../equipment-photos.js';
+import { brandFor } from '../equipment-brands.js';
 import { licenceUrl } from '../licences.js';
 import {
   esc, openModal, closeModal, toast, confirmDialog, formValues, parseNumber,
@@ -78,7 +79,9 @@ function thumbFor(g) {
             </button>`;
   }
 
-  return `<span class="avatar gearicon" aria-hidden="true">${equipmentIcon(g)}</span>`;
+  const brand = brandFor(g);
+  return `<span class="avatar gearicon ${brand ? 'is-branded' : ''}" aria-hidden="true"
+                ${brand ? `style="--brand-l:${brand.light};--brand-d:${brand.dark}"` : ''}>${equipmentIcon(g)}</span>`;
 }
 
 function renderEquipment(list, gear) {
@@ -100,11 +103,13 @@ function renderEquipment(list, gear) {
   list.innerHTML = `<div class="grid grid--cards">${visible.map((g) => {
     const retired = (g.status || 'active') !== 'active';
     const qty = Number(g.quantity) || 1;
+    const brand = brandFor(g);
     return `
       <article class="lscard ${retired ? 'is-gone' : ''}">
         <div class="lscard__top">
           ${thumbFor(g)}
           <div style="flex:1;min-width:0">
+            ${brand ? `<div class="brandmark" style="--brand-l:${brand.light};--brand-d:${brand.dark}">${esc(brand.label)}</div>` : ''}
             <div class="lscard__name">${esc(g.name)}${qty > 1 ? ` <span class="muted">×${qty}</span>` : ''}</div>
             ${g.model ? `<div class="lscard__sci" style="font-style:normal">${esc(g.model)}</div>` : ''}
           </div>
