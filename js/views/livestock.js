@@ -315,7 +315,7 @@ async function openPhoto(livestockId) {
          ${deed
            ? `<a href="${esc(deed)}" target="_blank" rel="noopener noreferrer">${esc(species.licence)}</a>`
            : esc(species.licence)} ·
-         <a href="${esc(species.source)}" target="_blank" rel="noopener noreferrer">source</a><br>
+         <a href="${esc(species.source)}" target="_blank" rel="noopener noreferrer">source</a>${species.changes ? ` · ${esc(species.changes)}` : ''}<br>
          Add your own photo and this is replaced.
        </p>`
     : (blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>');

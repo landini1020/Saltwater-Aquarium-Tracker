@@ -195,4 +195,30 @@ export const SPECIES_PHOTOS = {
     licence: 'CC BY 3.0',
     source: 'https://commons.wikimedia.org/wiki/File:Lysmata_amboinensis_Shrimp.jpg',
   },
+  // Tonga Fighting Conch. The entry records only the family, Strombidae, so a
+  // living Indo-Pacific strombid is right at the level the log actually claims.
+  'a7f3c1e0-0001-4000-8000-000000000094': {
+    file: 'gibberulus-gibberulus.jpg',
+    artist: "Elisabeth Morcel & Philippe Bourjon",
+    licence: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Gibberulus_gibberulus_R%C3%A9union.jpg',
+    changes: 'cropped to the animal',
+  },
+  // Trochus Snail, recorded as Trochus sp. — a live one grazing, not a shell.
+  'a7f3c1e0-0001-4000-8000-000000000095': {
+    file: 'trochus-maculatus.jpg',
+    artist: "Ahmed Abdul Rahman",
+    licence: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Trochus_maculatus_Landaagiraavaru.JPG',
+    changes: 'cropped to the animal',
+  },
+  // Turbo Snail. The only Turbo fluctuosus photograph is a five-view shell
+  // montage, so this is one view taken out of it rather than the whole plate.
+  'a7f3c1e0-0001-4000-8000-000000000096': {
+    file: 'turbo-fluctuosus.jpg',
+    artist: "H. Zell",
+    licence: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Turbo_fluctuosus_01.JPG',
+    changes: 'one view cropped from a multi-view plate',
+  },
 };
