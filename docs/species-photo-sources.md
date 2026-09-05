@@ -254,10 +254,21 @@ diagrams rather than usable photographs. Check them especially carefully:
 ### Pitho Crab
 
  - Species: *Pitho Mirabilis*
- - Size: 3456 x 5184
- - Licence: **CC0**
- - Photographer: Gary Todd
- - Source: <https://commons.wikimedia.org/wiki/File:Ancient_Greece_Neolithic_Pottery_Pithos_from_Sesklo,_c._4800_BC.jpg>
+ - Size: 650 x 650
+ - Licence: **All rights reserved** — not a free licence, see note below
+ - Photographer: SaltwaterAquarium.com
+ - Source: <https://www.saltwateraquarium.com/pitho-crab-chicago-clean-up-crew/>
+
+The automated search originally returned a 4800 BC Greek pottery *pithos* jar
+for this entry, and Wikimedia Commons has no image of the crab genus at all.
+iNaturalist has only two permissively licensed observations, both of other
+species (*P. anisodon*, *P. picteti*), neither of them *P. mirabilis*.
+
+The photo used is therefore the seller's own product shot of the animal as
+sold. It carries no reuse grant, so it is the one image here that is not
+redistributable. It is kept because this is a personal log for a single tank,
+and it is credited and linked back to the seller like every other entry. **If
+this repository is ever published, remove this image first.**
 
 ### Rock Flower Anemone low resolution
 
