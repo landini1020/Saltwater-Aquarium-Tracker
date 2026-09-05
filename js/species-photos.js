@@ -10,11 +10,6 @@
    jar for Pitho. Entries with no correct, usable photograph are absent here and
    fall back to the category icon.
 
-   One entry — the Pitho Crab — is a vendor product photo rather than a freely
-   licensed one, because no reusable photograph of that genus exists anywhere.
-   This is a personal log, so it stays, credited and linked to the seller. If
-   this repository is ever made public that one image should come out first.
-
    Generated file - see docs/species-photo-sources.md. */
 
 export const SPECIES_PHOTO_DIR = 'photos/species/';
@@ -181,16 +176,6 @@ export const SPECIES_PHOTOS = {
     artist: "Diego Delso",
     licence: 'CC BY-SA 4.0',
     source: 'https://commons.wikimedia.org/wiki/File:Almeja_gigante_(Tridacna_maxima),_Zanz%C3%ADbar,_Tanzania,_2024-05-30,_DD_86.jpg',
-  },
-  // Pitho Crab. Not a licensed stock photo like the rest of this file: it is
-  // the vendor's own product shot of the animal as sold, kept because no
-  // reusable photograph of the genus exists and this is a personal log. It is
-  // still not this tank's crab, so it is credited and linked like any other.
-  'a7f3c1e0-0001-4000-8000-000000000078': {
-    file: 'pithocrab.jpg',
-    artist: "SaltwaterAquarium.com",
-    licence: 'All rights reserved',
-    source: 'https://www.saltwateraquarium.com/pitho-crab-chicago-clean-up-crew/',
   },
   'a7f3c1e0-0001-4000-8000-000000000086': {
     file: 'phymanthus-crucifer.jpg',
