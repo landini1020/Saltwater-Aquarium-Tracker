@@ -871,6 +871,16 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
 .photocredit b { color: var(--text-soft); }
 .photocredit a { color: var(--accent); text-decoration: underline; }
 
+/* How the picture differs from the thing you own — the box rather than the
+   product, the wrong capacity. Warning-toned because it is a caveat about
+   accuracy, not part of the attribution. */
+.photocredit__note {
+  display: inline-block;
+  margin-top: 3px;
+  color: var(--warn);
+  font-style: italic;
+}
+
 /* --- Maintenance tasks ---------------------------------------------------- */
 
 .taskcard { border-left: 3px solid var(--line-strong); }

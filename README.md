@@ -131,6 +131,16 @@ Equipment with model, quantity and install date, showing how long each piece has
 service, and retired items kept for the record. Alongside it, supplements with brand,
 size and their full dosing instructions.
 
+Every one of the 25 items carries a product photo. **These are not licensed for reuse** —
+see the header of `js/equipment-photos.js` for what was searched and why nothing free
+exists. They are the makers' and sellers' own images, each credited and linked back to
+the page it came from, kept on the judgement that this is a personal log of one tank.
+Where a photograph is not exactly the thing the record describes — Fluval photograph the
+box rather than the filter, and the RODI shot is legibly labelled 75 GPD against a record
+that says 200 — the entry carries a `note` and the photo viewer prints it in amber. A
+picture that quietly shows the wrong item is worse than no picture. Adding your own photo
+replaces the stock one everywhere.
+
 ### Foods
 
 What is in the food cupboard — brand, type, size, quantity on hand, what it cost and

@@ -233,7 +233,15 @@ async function openPhoto(equipmentId) {
 
   // CC BY-SA requires the photographer, the licence with a link to it, and any
   // changes to be named wherever the image appears — so the credit is part of
-  // the view, not a footnote.
+  // the view, not a footnote. Most of these photos carry no licence at all, in
+  // which case the same line is courtesy: it still says whose picture this is
+  // and links back to where it came from.
+  //
+  // `note` is separate from `changes`: changes describes what was done to the
+  // image, a note describes how the photo differs from the thing you own — the
+  // box rather than the product, a neighbouring size, the wrong capacity. It is
+  // printed because a photo that quietly shows the wrong item is worse than no
+  // photo at all.
   const deed = stock ? licenceUrl(stock.licence) : '';
   const credit = stock
     ? `<p class="photocredit">
@@ -241,7 +249,8 @@ async function openPhoto(equipmentId) {
          ${deed
            ? `<a href="${esc(deed)}" target="_blank" rel="noopener noreferrer">${esc(stock.licence)}</a>`
            : esc(stock.licence)} ·
-         <a href="${esc(stock.source)}" target="_blank" rel="noopener noreferrer">source</a>${stock.changes ? ` · ${esc(stock.changes)}` : ''}<br>
+         <a href="${esc(stock.source)}" target="_blank" rel="noopener noreferrer">source</a>${stock.changes ? ` · ${esc(stock.changes)}` : ''}
+         ${stock.note ? `<br><span class="photocredit__note">${esc(stock.note)}</span>` : ''}<br>
          Add your own photo and this is replaced.
        </p>`
     : (blob ? '' : '<p class="field__hint">Only a thumbnail is stored on this device.</p>');
