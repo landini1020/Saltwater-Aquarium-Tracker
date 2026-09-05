@@ -714,6 +714,47 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
 .is-gone .gearicon.is-branded { color: var(--text-faint); }
 .is-gone .gearicon.is-branded { background: var(--bg-sunk); border-color: var(--line); }
 
+/* The feeding schedules attached to a food, on the food's own card. A feeding
+   is an ordinary task, so this is a compact second view of it — the full one
+   lives in Maintenance. */
+.feedings {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+.feedings__head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text-faint);
+}
+.feedings__none { margin-top: 8px; font-size: 12.5px; color: var(--text-faint); }
+
+.feedlist { margin-top: 8px; display: grid; gap: 6px; }
+.feedrow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 8px;
+  background: var(--bg-sunk);
+}
+.feedrow__main { flex: 1; min-width: 0; }
+.feedrow__name { font-size: 13px; font-weight: 600; }
+.feedrow__meta { font-size: 11.5px; color: var(--text-faint); margin-top: 1px; }
+
+/* The left edge carries the same state colours the badges use, so a card scans
+   at a glance without reading the badge text. */
+.feedrow.is-overdue { border-left-color: var(--bad); }
+.feedrow.is-today,
+.feedrow.is-never { border-left-color: var(--warn); }
+.feedrow.is-upcoming { border-left-color: var(--ok); }
+
+@media (max-width: 480px) {
+  .feedrow { flex-wrap: wrap; }
+  .feedrow__main { flex-basis: 100%; }
+}
+
 .photoview {
   display: block;
   width: 100%;

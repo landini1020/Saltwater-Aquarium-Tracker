@@ -66,6 +66,7 @@ const state = {
   expenses: [],
   equipment: [],
   supplements: [],
+  foods: [],
   tasks: [],
   activities: [],
   settings: { ...DEFAULT_SETTINGS },
@@ -97,7 +98,7 @@ export function uid() {
 /* --- Boot ----------------------------------------------------------------- */
 
 export async function init() {
-  const [tanks, params, readings, livestock, expenses, equipment, supplements, tasks, activities, meta] =
+  const [tanks, params, readings, livestock, expenses, equipment, supplements, foods, tasks, activities, meta] =
     await Promise.all([
       db.getAll('tanks'),
       db.getAll('params'),
@@ -106,6 +107,7 @@ export async function init() {
       db.getAll('expenses'),
       db.getAll('equipment'),
       db.getAll('supplements'),
+      db.getAll('foods'),
       db.getAll('tasks'),
       db.getAll('activities'),
       db.getAll('meta'),
@@ -118,6 +120,7 @@ export async function init() {
   state.expenses = expenses;
   state.equipment = equipment;
   state.supplements = supplements;
+  state.foods = foods;
   state.tasks = tasks;
   state.activities = activities;
 
@@ -135,7 +138,7 @@ export async function init() {
   return state;
 }
 
-const COLLECTIONS = ['tanks', 'params', 'readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
+const COLLECTIONS = ['tanks', 'params', 'readings', 'livestock', 'expenses', 'equipment', 'supplements', 'foods', 'tasks', 'activities'];
 
 /**
  * Version 1.5.0 shipped cloud sync briefly, during which deleting a record only
@@ -159,6 +162,7 @@ const SEEDABLE = [
   ['expenses', 'STARTER_EXPENSES'],
   ['equipment', 'STARTER_EQUIPMENT'],
   ['supplements', 'STARTER_SUPPLEMENTS'],
+  ['foods', 'STARTER_FOODS'],
   ['tasks', 'STARTER_TASKS'],
   ['activities', 'STARTER_ACTIVITIES'],
 ];
@@ -315,6 +319,25 @@ export function supplements(tankId = activeTankId()) {
   return state.supplements.filter((s) => s.tankId === tankId);
 }
 
+export function foods(tankId = activeTankId()) {
+  return state.foods.filter((f) => f.tankId === tankId);
+}
+
+export function foodById(id, tankId = activeTankId()) {
+  return state.foods.find((f) => f.id === id && f.tankId === tankId) || null;
+}
+
+/**
+ * Feeding schedules for one food. A feeding is an ordinary task pointing at the
+ * food by id, so it lands in Maintenance, the due-date maths and the activity
+ * history with no separate machinery.
+ */
+export function feedingsForFood(foodId, tankId = activeTankId()) {
+  return state.tasks
+    .filter((t) => t.tankId === tankId && t.relatedFoodId === foodId)
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+}
+
 export function tasks(tankId = activeTankId()) {
   return state.tasks.filter((t) => t.tankId === tankId);
 }
@@ -357,7 +380,7 @@ export async function saveTank(tank) {
 export async function deleteTank(tankId) {
   if (state.tanks.length <= 1) throw new Error('You need at least one tank.');
 
-  const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'tasks', 'activities'];
+  const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'foods', 'tasks', 'activities'];
 
   // The tank's livestock take their photos with them, or the blobs would
   // linger in storage with no entry left to reach them from.
@@ -541,6 +564,29 @@ export async function deleteEquipment(id) {
 export const saveSupplement = (record) => upsert('supplements', record);
 export const deleteSupplement = (id) => drop('supplements', id);
 
+export const saveFood = (record) => upsert('foods', record);
+
+/**
+ * Deleting a food drops its photo, and unhooks any feeding schedule pointing at
+ * it. The schedules themselves stay: the feeding still happens, it just no
+ * longer names a food from the cupboard.
+ */
+export async function deleteFood(id) {
+  await db.remove('photos', id).catch(() => {});
+
+  const attached = state.tasks.filter((t) => t.relatedFoodId === id);
+  if (attached.length) {
+    const detached = attached.map((t) => ({ ...t, relatedFoodId: null }));
+    await db.putMany('tasks', detached);
+    for (const row of detached) {
+      const i = state.tasks.findIndex((t) => t.id === row.id);
+      if (i >= 0) state.tasks[i] = row;
+    }
+  }
+
+  return drop('foods', id);
+}
+
 export const saveTask = (record) => upsert('tasks', record);
 export const saveActivity = (record) => upsert('activities', record);
 export const deleteActivity = (id) => drop('activities', id);
@@ -603,14 +649,24 @@ export function knownStores() {
    device — including it in the backup would push the file past what a phone can
    share. The originals remain in your photo library regardless.
 
-   Livestock and equipment can both own a photo. Ids are UUIDs, so the owner is
-   found by looking rather than passed in, and every existing call site keeps
-   working unchanged. */
+   Livestock, equipment and foods can each own a photo. Ids are UUIDs, so the
+   owner is found by looking rather than passed in, and every existing call site
+   keeps working unchanged. */
 
 const PHOTO_OWNERS = [
   { collection: 'livestock', save: (r) => saveLivestock(r) },
   { collection: 'equipment', save: (r) => saveEquipment(r) },
+  { collection: 'foods', save: (r) => saveFood(r) },
 ];
+
+/** Every id that is allowed to have a stored photo, for orphan pruning. */
+function photoOwnerIds() {
+  const ids = new Set();
+  for (const owner of PHOTO_OWNERS) {
+    for (const row of state[owner.collection]) ids.add(row.id);
+  }
+  return ids;
+}
 
 function photoOwner(id) {
   for (const owner of PHOTO_OWNERS) {
@@ -735,6 +791,7 @@ export function exportData() {
       expenses: state.expenses.length,
       equipment: state.equipment.length,
       supplements: state.supplements.length,
+      foods: state.foods.length,
       tasks: state.tasks.length,
       activities: state.activities.length,
     },
@@ -746,6 +803,7 @@ export function exportData() {
       expenses: state.expenses,
       equipment: state.equipment,
       supplements: state.supplements,
+      foods: state.foods,
       tasks: state.tasks,
       activities: state.activities,
       meta: [state.settings],
@@ -783,6 +841,7 @@ export async function importData(payload) {
     expenses: d.expenses || [],
     equipment: d.equipment || [],
     supplements: d.supplements || [],
+    foods: d.foods || [],
     tasks: d.tasks || [],
     activities: d.activities || [],
     meta: d.meta || [],
@@ -793,9 +852,11 @@ export async function importData(payload) {
 
   await init();
 
-  // Photos are keyed by livestock id. Any blob whose entry did not survive the
-  // import has nothing pointing at it and would sit invisible forever.
-  const keep = new Set(state.livestock.map((l) => l.id));
+  // Photos are keyed by the id of the record that owns them. Any blob whose
+  // owner did not survive the import has nothing pointing at it and would sit
+  // invisible forever. This must consider every kind of owner: keying it off
+  // livestock alone deleted the equipment photos on every restore.
+  const keep = photoOwnerIds();
   const orphaned = (await db.getAll('photos')).filter((p) => !keep.has(p.id)).map((p) => p.id);
   if (orphaned.length) await db.removeMany('photos', orphaned);
 
@@ -812,6 +873,7 @@ export async function resetAll() {
   state.expenses = [];
   state.equipment = [];
   state.supplements = [];
+  state.foods = [];
   state.tasks = [];
   state.activities = [];
   state.settings = { ...DEFAULT_SETTINGS, seededCollections: [] };

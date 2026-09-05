@@ -77,7 +77,7 @@ on a new phone or laptop shows everything immediately with nothing to import.
 |---|---|
 | Livestock entries | 96 — 34 still in the tank (68 animals), 62 since lost |
 | Expenses | 132, totalling $10,828.75 |
-| Equipment | 25 items · **Supplements** 11 |
+| Equipment | 25 items · **Supplements** 11 · **Foods** 3 |
 | Maintenance | 13 tasks · 194 logged activities |
 | Tank | 125 gal mixed reef, set up 2023-04-18 |
 
@@ -99,9 +99,9 @@ Re-exporting that sheet is what it would take to add them.
 Seeding is tracked **per collection**, in `settings.seededCollections`. A collection is
 filled only if it has never been seeded and is currently empty, and any collection
 holding data is treated as settled regardless of what was recorded. That means a later
-release can add a whole new section — as Maintenance and Gear were — to a browser that
-already holds the log, without touching what is there, and without a collection you
-empty on purpose being refilled on the next reload.
+release can add a whole new section — as Maintenance, Gear and Foods were — to a
+browser that already holds the log, without touching what is there, and without a
+collection you empty on purpose being refilled on the next reload.
 
 Editing the starter entries in the app is safe; they are ordinary records once
 installed. To revise the shipped log, edit `js/seed-data.js`; a collection already
@@ -126,6 +126,19 @@ tab carries a red pip while anything is outstanding.
 Equipment with model, quantity and install date, showing how long each piece has been in
 service, and retired items kept for the record. Alongside it, supplements with brand,
 size and their full dosing instructions.
+
+### Foods
+
+What is in the food cupboard — brand, type, size, quantity on hand, what it cost and
+where it came from — with room for the usage directions copied off the box, so they are
+to hand at feeding time instead of on a sheet in a drawer. Add a photo of the tub and it
+replaces the drawn type symbol.
+
+Each food carries its own feeding schedules. A feeding is not a separate kind of job: it
+is an ordinary task pointing at the food, so it uses the same due-date maths, shows up in
+Maintenance beside the water changes, feeds the red pip on the Care tab, and logs to the
+same activity history. The Foods screen leads with anything due, and every schedule can
+be logged from the food's own card.
 
 ### Expenses
 
@@ -191,8 +204,10 @@ js/
   params.js              parameter definitions, units, range evaluation
   charts.js              SVG line/bar charts and sparklines
   ui.js                  formatting, modals, toasts, escaping
+  food-icons.js          drawn symbols and type list for foods
   views/                 one module per screen: dashboard, parameters,
-                         maintenance, livestock, gear, expenses, settings
+                         maintenance, livestock, gear, foods, expenses,
+                         settings
 icons/                   app icons
 ```
 

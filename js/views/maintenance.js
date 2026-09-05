@@ -52,7 +52,8 @@ export function dueInfo(task) {
   return { state: 'upcoming', due, days };
 }
 
-function dueBadge(info) {
+/** Shared with the Foods screen so a feeding reads the same in both places. */
+export function dueBadge(info) {
   switch (info.state) {
     case 'overdue': {
       const span = info.days < 45 ? plural(info.days, 'day') : formatDuration(info.due);
@@ -166,7 +167,9 @@ export function render(root) {
 }
 
 function taskCard({ task, info }) {
-  const related = [task.relatedEquipment, task.relatedSupplement].filter(Boolean).join(' · ');
+  const food = task.relatedFoodId ? store.foodById(task.relatedFoodId) : null;
+  const related = [task.relatedEquipment, task.relatedSupplement, food && food.name]
+    .filter(Boolean).join(' · ');
   const last = task.lastActivity
     ? `${formatDate(task.lastActivity)} (${formatRelative(task.lastActivity)})`
     : 'never logged';
@@ -300,16 +303,24 @@ function wire(el, root) {
 
 /* --- Task form ------------------------------------------------------------ */
 
+/**
+ * Add or edit a task.
+ *
+ * A record with no id is a prefilled *new* task rather than an edit, which is
+ * how the Foods screen opens this form already pointing at a food.
+ */
 export function openTaskForm(existing) {
-  const isNew = !existing;
-  const task = existing || {
+  const isNew = !(existing && existing.id);
+  const task = {
     name: '', taskType: 'Maintenance', relatedEquipment: '', relatedSupplement: '',
-    amount: '', instructions: '', scheduleText: '', intervalDays: null,
+    relatedFoodId: '', amount: '', instructions: '', scheduleText: '', intervalDays: null,
     startDate: todayISO(), lastActivity: '', status: 'active',
+    ...(existing || {}),
   };
 
   const gear = store.equipment().map((e) => e.name).sort((a, b) => a.localeCompare(b));
   const supps = store.supplements().map((s) => s.name).sort((a, b) => a.localeCompare(b));
+  const foods = store.foods().slice().sort((a, b) => a.name.localeCompare(b.name));
 
   const modal = openModal({
     title: isNew ? 'Add a task' : `Edit ${task.name}`,
@@ -345,6 +356,15 @@ export function openTaskForm(existing) {
             <datalist id="suppList">${supps.map((s) => `<option value="${esc(s)}"></option>`).join('')}</datalist>
           </label>
         </div>
+
+        <label class="field">
+          <span>Food</span>
+          <select name="relatedFoodId">
+            <option value="">None — not a feeding</option>
+            ${foods.map((f) => `<option value="${esc(f.id)}" ${f.id === task.relatedFoodId ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}
+          </select>
+          <span class="field__hint">Pick a food and this task also appears on that food's card in Foods.</span>
+        </label>
 
         <div class="field-row">
           <label class="field">
@@ -395,6 +415,7 @@ export function openTaskForm(existing) {
       taskType: values.taskType.trim(),
       relatedEquipment: values.relatedEquipment.trim(),
       relatedSupplement: values.relatedSupplement.trim(),
+      relatedFoodId: values.relatedFoodId || null,
       amount: values.amount.trim(),
       instructions: values.instructions.trim(),
       intervalDays: days,

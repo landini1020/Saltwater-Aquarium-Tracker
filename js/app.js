@@ -10,6 +10,7 @@ import * as maintenance from './views/maintenance.js';
 import * as calculator from './views/calculator.js';
 import * as livestock from './views/livestock.js';
 import * as gear from './views/gear.js';
+import * as foods from './views/foods.js';
 import * as expenses from './views/expenses.js';
 import * as settings from './views/settings.js';
 
@@ -20,6 +21,7 @@ const ROUTES = {
   calculator: { view: calculator, title: 'Dosing calculator' },
   livestock: { view: livestock, title: 'Livestock' },
   gear: { view: gear, title: 'Gear' },
+  foods: { view: foods, title: 'Foods' },
   expenses: { view: expenses, title: 'Expenses' },
   settings: { view: settings, title: 'Settings' },
 };

@@ -5632,3 +5632,59 @@ export const STARTER_ACTIVITIES =
         "createdAt":  "2025-12-13T00:00:00.000Z"
     }
 ];
+
+/* Foods are new in 1.16.0, so this section seeds into a log that already holds
+   everything else. The three entries are the genuine foods among the purchases
+   already in STARTER_EXPENSES — the rest of what was filed under "Food" there is
+   supplements, and lives in STARTER_SUPPLEMENTS. Purchase details are carried
+   over from the matching expense so the two agree. No feeding schedules are
+   seeded: when and how much to feed is yours to set. */
+
+export const STARTER_FOODS =
+[
+    {
+        "id":  "a7f3c1e0-0007-4000-8000-000000000001",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Fish Pellets",
+        "brand":  "",
+        "foodType":  "Pellet",
+        "size":  "",
+        "quantity":  1,
+        "purchasedOn":  "2023-05-14",
+        "purchasedFrom":  "Discover Aquatics",
+        "cost":  13.99,
+        "directions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0007-4000-8000-000000000002",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "PolypLab Reef Roids",
+        "brand":  "PolypLab",
+        "foodType":  "Coral food",
+        "size":  "",
+        "quantity":  1,
+        "purchasedOn":  "2023-05-22",
+        "purchasedFrom":  "Amazon",
+        "cost":  11.99,
+        "directions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    },
+    {
+        "id":  "a7f3c1e0-0007-4000-8000-000000000003",
+        "tankId":  "a7f3c1e0-0000-4000-8000-000000000001",
+        "name":  "Red Sea Reef Energy AB+ Plus",
+        "brand":  "Red Sea",
+        "foodType":  "Coral food",
+        "size":  "1000 ml",
+        "quantity":  1,
+        "purchasedOn":  "2023-05-30",
+        "purchasedFrom":  "Discover Aquatics",
+        "cost":  32,
+        "directions":  "",
+        "notes":  "",
+        "createdAt":  "2025-12-13T00:00:00.000Z"
+    }
+];

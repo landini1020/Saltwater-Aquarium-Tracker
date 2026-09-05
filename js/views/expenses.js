@@ -306,10 +306,17 @@ function wire(el, root) {
 
 /* --- Add / edit form ------------------------------------------------------ */
 
+/**
+ * Add or edit an expense.
+ *
+ * A record with no id is a prefilled *new* expense rather than an edit, which is
+ * how the Foods screen opens this form already filled in from a food.
+ */
 export function openForm(existing) {
-  const isNew = !existing;
-  const item = existing || {
+  const isNew = !(existing && existing.id);
+  const item = {
     date: todayISO(), description: '', category: 'Equipment', store: '', amount: '', notes: '',
+    ...(existing || {}),
   };
 
   const stores = store.knownStores();
