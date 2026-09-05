@@ -11,6 +11,9 @@ import * as calculator from './views/calculator.js';
 import * as livestock from './views/livestock.js';
 import * as gear from './views/gear.js';
 import * as foods from './views/foods.js';
+import * as wishlist from './views/wishlist.js';
+import * as notes from './views/notes.js';
+import * as gallery from './views/gallery.js';
 import * as expenses from './views/expenses.js';
 import * as settings from './views/settings.js';
 
@@ -22,6 +25,9 @@ const ROUTES = {
   livestock: { view: livestock, title: 'Livestock' },
   gear: { view: gear, title: 'Gear' },
   foods: { view: foods, title: 'Foods' },
+  wishlist: { view: wishlist, title: 'Wish List' },
+  notes: { view: notes, title: 'Notes' },
+  gallery: { view: gallery, title: 'Gallery' },
   expenses: { view: expenses, title: 'Expenses' },
   settings: { view: settings, title: 'Settings' },
 };

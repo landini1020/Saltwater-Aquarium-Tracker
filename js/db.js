@@ -7,9 +7,10 @@
 const DB_NAME = 'reef-log';
 // v2 added equipment, supplements, tasks and activities.
 // v3 added photos.
-// v4 added foods. The upgrade handler creates whatever is missing, so bumping
-// this is all a new store needs.
-const DB_VERSION = 4;
+// v4 added foods.
+// v5 added wishlist, notes, albums and gallery. The upgrade handler creates
+// whatever is missing, so bumping this is all a new store needs.
+const DB_VERSION = 5;
 
 /** Object store name -> key path. */
 export const STORES = {
@@ -23,6 +24,13 @@ export const STORES = {
   foods: 'id',
   tasks: 'id',
   activities: 'id',
+  wishlist: 'id',
+  notes: 'id',
+  albums: 'id',
+  // One record per photo in the gallery. Unlike livestock or gear, where the
+  // photo hangs off an existing record, a gallery photo *is* the record — so it
+  // owns a thumbnail and a full-size blob exactly the same way.
+  gallery: 'id',
   // Full-size image Blobs, keyed by the id of the record they belong to. Kept
   // out of the record itself so the log stays small enough to back up and
   // restore. See PHOTO_OWNERS in store.js for which records can own one.

@@ -247,6 +247,18 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .sidenav__list a.is-active { background: rgba(56, 169, 223, .2); color: #fff; }
 .sidenav__list svg { flex: none; opacity: .9; }
 
+/* Group heading. Decorative only — it is aria-hidden, because the links below
+   it already say where they go and a screen reader gains nothing from a label
+   that is not a real landmark. */
+.sidenav__group {
+  margin: 14px 0 2px;
+  padding: 0 12px;
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: #6f8da0;
+}
+.sidenav__list > li:first-child + .sidenav__group { margin-top: 10px; }
+
 .sidenav__foot { border-top: 1px solid rgba(255, 255, 255, .1); padding-top: 12px; }
 .tankpick { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: #86a3b7; }
 .tankpick select {
@@ -713,6 +725,92 @@ td .cellstate { display: inline-flex; align-items: center; gap: 6px; }
 .is-gone .brandmark,
 .is-gone .gearicon.is-branded { color: var(--text-faint); }
 .is-gone .gearicon.is-branded { background: var(--bg-sunk); border-color: var(--line); }
+
+/* --- Wish list ------------------------------------------------------------ */
+
+/* Priority stars. Each is a real button, so a rating can be set by keyboard and
+   announces itself; the group is not a radio set because tapping the current
+   value clears it. */
+.stars { display: flex; gap: 2px; margin-top: 9px; }
+.star {
+  display: grid; place-items: center;
+  width: 26px; height: 26px; padding: 0;
+  border: 0; border-radius: var(--r-sm);
+  background: none; cursor: pointer;
+  color: var(--line-strong);
+}
+.star svg { width: 17px; height: 17px; fill: currentColor; stroke: none; }
+.star:hover { background: var(--bg-sunk); color: var(--text-faint); }
+.star.is-on { color: #e0a020; }
+.star:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* --- Notes ---------------------------------------------------------------- */
+
+.notecard { cursor: pointer; transition: border-color .12s ease; }
+.notecard:hover { border-color: var(--line-strong); }
+.notecard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.notecard__title { font-size: 15px; font-weight: 650; }
+
+/* Clamped to three lines: the list is for finding a note, not reading it. */
+.notecard__body {
+  margin-top: 6px;
+  font-size: 13px; line-height: 1.5;
+  color: var(--text-soft);
+  white-space: pre-wrap;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.notecard mark {
+  background: var(--warn-soft); color: inherit;
+  border-radius: 2px; padding: 0 1px;
+}
+
+.notebody {
+  min-height: 300px;
+  font-size: 14px; line-height: 1.6;
+  resize: vertical;
+}
+
+.field--search input { width: 100%; }
+
+/* --- Gallery -------------------------------------------------------------- */
+
+/* Album chips wrap once there are more than a couple; the segmented control
+   elsewhere in the app is a single row of two or three. */
+.seg--wrap { flex-wrap: wrap; height: auto; }
+
+.photogrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.phototile {
+  position: relative;
+  display: block; padding: 0;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-sunk);
+  overflow: hidden; cursor: pointer;
+}
+.phototile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.phototile:hover { border-color: var(--accent); }
+.phototile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Caption sits on a gradient rather than a solid bar, so it stays readable over
+   a bright reef shot without hiding the bottom of the picture. */
+.phototile__cap {
+  position: absolute; inset: auto 0 0 0;
+  padding: 16px 8px 6px;
+  font-size: 11.5px; font-weight: 600;
+  color: #fff; text-align: left;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .72));
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .photogrid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+}
 
 /* The feeding schedules attached to a food, on the food's own card. A feeding
    is an ordinary task, so this is a compact second view of it — the full one

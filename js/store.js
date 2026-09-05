@@ -27,6 +27,18 @@ export const LIVESTOCK_STATUSES = [
   { id: 'moved', label: 'Moved to another tank' },
 ];
 
+/* What a wish list entry can be, and where it lands when you buy it. The ids of
+   the first three match LIVESTOCK_CATEGORIES on purpose — a wished-for fish
+   becomes a fish. See WISH_TARGETS for the mapping. */
+export const WISH_CATEGORIES = [
+  { id: 'fish', label: 'Fish', icon: '\u{1F420}', movesTo: 'Livestock' },
+  { id: 'coral', label: 'Coral', icon: '\u{1FAB8}', movesTo: 'Livestock' },
+  { id: 'invert', label: 'Invertebrate', icon: '\u{1F990}', movesTo: 'Livestock' },
+  { id: 'equipment', label: 'Equipment', icon: '\u{1F527}', movesTo: 'Gear' },
+  { id: 'food', label: 'Food', icon: '\u{1F35A}', movesTo: 'Foods' },
+  { id: 'supplement', label: 'Supplement', icon: '\u{1F9EA}', movesTo: 'Gear' },
+];
+
 export const EXPENSE_CATEGORIES = [
   'Livestock',
   'Equipment',
@@ -69,6 +81,10 @@ const state = {
   foods: [],
   tasks: [],
   activities: [],
+  wishlist: [],
+  notes: [],
+  albums: [],
+  gallery: [],
   settings: { ...DEFAULT_SETTINGS },
 };
 
@@ -98,31 +114,15 @@ export function uid() {
 /* --- Boot ----------------------------------------------------------------- */
 
 export async function init() {
-  const [tanks, params, readings, livestock, expenses, equipment, supplements, foods, tasks, activities, meta] =
-    await Promise.all([
-      db.getAll('tanks'),
-      db.getAll('params'),
-      db.getAll('readings'),
-      db.getAll('livestock'),
-      db.getAll('expenses'),
-      db.getAll('equipment'),
-      db.getAll('supplements'),
-      db.getAll('foods'),
-      db.getAll('tasks'),
-      db.getAll('activities'),
-      db.getAll('meta'),
-    ]);
+  // Loaded by name rather than destructured: the list only grows, and a
+  // positional read of fifteen collections is one reordering away from a bug
+  // that puts the notes in the wishlist.
+  const [loaded, meta] = await Promise.all([
+    Promise.all(COLLECTIONS.map((name) => db.getAll(name))),
+    db.getAll('meta'),
+  ]);
 
-  state.tanks = tanks;
-  state.params = params;
-  state.readings = readings;
-  state.livestock = livestock;
-  state.expenses = expenses;
-  state.equipment = equipment;
-  state.supplements = supplements;
-  state.foods = foods;
-  state.tasks = tasks;
-  state.activities = activities;
+  COLLECTIONS.forEach((name, i) => { state[name] = loaded[i]; });
 
   const saved = meta.find((m) => m.key === 'settings');
   state.settings = {
@@ -138,7 +138,13 @@ export async function init() {
   return state;
 }
 
-const COLLECTIONS = ['tanks', 'params', 'readings', 'livestock', 'expenses', 'equipment', 'supplements', 'foods', 'tasks', 'activities'];
+/* Every domain collection, in load order. `init` reads these by name, so adding
+   one here is most of what a new section needs. */
+const COLLECTIONS = [
+  'tanks', 'params', 'readings', 'livestock', 'expenses', 'equipment',
+  'supplements', 'foods', 'tasks', 'activities', 'wishlist', 'notes',
+  'albums', 'gallery',
+];
 
 /**
  * Version 1.5.0 shipped cloud sync briefly, during which deleting a record only
@@ -353,6 +359,55 @@ export function activitiesForTask(taskId, tankId = activeTankId()) {
   return activities(tankId).filter((a) => a.taskId === taskId);
 }
 
+/** Wish list, highest priority first, then newest. */
+export function wishlist(tankId = activeTankId()) {
+  return state.wishlist
+    .filter((w) => w.tankId === tankId)
+    .sort((a, b) => (Number(b.priority) || 0) - (Number(a.priority) || 0)
+      || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+}
+
+export function wishById(id, tankId = activeTankId()) {
+  return state.wishlist.find((w) => w.id === id && w.tankId === tankId) || null;
+}
+
+/** Notes, most recently edited first — the one you were last in is the one you want. */
+export function notes(tankId = activeTankId()) {
+  return state.notes
+    .filter((n) => n.tankId === tankId)
+    .sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
+}
+
+export function noteById(id, tankId = activeTankId()) {
+  return state.notes.find((n) => n.id === id && n.tankId === tankId) || null;
+}
+
+export function albums(tankId = activeTankId()) {
+  return state.albums
+    .filter((a) => a.tankId === tankId)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function albumById(id, tankId = activeTankId()) {
+  return state.albums.find((a) => a.id === id && a.tankId === tankId) || null;
+}
+
+/**
+ * Gallery photos, newest first. Pass an album id for one album's photos, or the
+ * string 'unfiled' for the ones not in any album.
+ */
+export function gallery(albumId = null, tankId = activeTankId()) {
+  return state.gallery
+    .filter((p) => p.tankId === tankId
+      && (albumId === null
+        || (albumId === 'unfiled' ? !p.albumId : p.albumId === albumId)))
+    .sort((a, b) => String(b.takenAt || b.createdAt || '').localeCompare(String(a.takenAt || a.createdAt || '')));
+}
+
+export function galleryById(id, tankId = activeTankId()) {
+  return state.gallery.find((p) => p.id === id && p.tankId === tankId) || null;
+}
+
 /* --- Mutations ------------------------------------------------------------ */
 
 export async function saveSettings(patch) {
@@ -380,11 +435,18 @@ export async function saveTank(tank) {
 export async function deleteTank(tankId) {
   if (state.tanks.length <= 1) throw new Error('You need at least one tank.');
 
-  const owned = ['readings', 'livestock', 'expenses', 'equipment', 'supplements', 'foods', 'tasks', 'activities'];
+  const owned = [
+    'readings', 'livestock', 'expenses', 'equipment', 'supplements', 'foods',
+    'tasks', 'activities', 'wishlist', 'notes', 'albums', 'gallery',
+  ];
 
-  // The tank's livestock take their photos with them, or the blobs would
-  // linger in storage with no entry left to reach them from.
-  const photoIds = state.livestock.filter((l) => l.tankId === tankId).map((l) => l.id);
+  // Everything the tank owns takes its photo with it, or the blobs would linger
+  // in storage with no record left to reach them from. This has to cover every
+  // kind of photo owner, not just livestock — gear, foods, wish list and the
+  // whole gallery all hold one.
+  const photoIds = PHOTO_OWNERS
+    .flatMap((owner) => state[owner.collection].filter((r) => r.tankId === tankId))
+    .map((r) => r.id);
 
   await Promise.all([
     db.remove('tanks', tankId),
@@ -591,6 +653,133 @@ export const saveTask = (record) => upsert('tasks', record);
 export const saveActivity = (record) => upsert('activities', record);
 export const deleteActivity = (id) => drop('activities', id);
 
+/* --- Wish list ------------------------------------------------------------ */
+
+export const saveWish = (record) => upsert('wishlist', record);
+
+/** A wish can carry a photo — of the tank at the shop, usually — so drop it too. */
+export async function deleteWish(id) {
+  await db.remove('photos', id).catch(() => {});
+  return drop('wishlist', id);
+}
+
+/* Where each wish-list category lands when you actually buy the thing, and how
+   its fields map onto that section's own shape. */
+const WISH_TARGETS = {
+  fish: { collection: 'livestock', build: (w) => ({ category: 'fish', ...livestockFromWish(w) }) },
+  coral: { collection: 'livestock', build: (w) => ({ category: 'coral', ...livestockFromWish(w) }) },
+  invert: { collection: 'livestock', build: (w) => ({ category: 'invert', ...livestockFromWish(w) }) },
+  equipment: {
+    collection: 'equipment',
+    build: (w) => ({
+      name: w.name, model: w.type || '', quantity: Math.max(1, Number(w.quantity) || 1),
+      installedDate: todayISO(), status: 'active', retiredDate: '', notes: w.notes || '',
+    }),
+  },
+  food: {
+    collection: 'foods',
+    build: (w) => ({
+      name: w.name, brand: w.type || '', foodType: '', size: '',
+      quantity: Math.max(1, Number(w.quantity) || 1),
+      purchasedOn: todayISO(), purchasedFrom: w.store || '',
+      cost: Number(w.price) || '', directions: '', notes: w.notes || '',
+    }),
+  },
+  supplement: {
+    collection: 'supplements',
+    build: (w) => ({
+      name: w.name, brand: w.type || '', size: '',
+      quantity: Math.max(1, Number(w.quantity) || 1),
+      instructions: '', notes: w.notes || '',
+    }),
+  },
+};
+
+function livestockFromWish(w) {
+  return {
+    name: w.name,
+    type: w.type || '',
+    scientificName: w.scientificName || '',
+    quantity: Math.max(1, Number(w.quantity) || 1),
+    acquiredDate: todayISO(),
+    source: w.store || '',
+    price: Number(w.price) || '',
+    status: 'alive',
+    removedDate: '',
+    notes: w.notes || '',
+  };
+}
+
+/**
+ * Buy a wish: create the real record in whichever section the category belongs
+ * to, hand its photo over, and take the wish off the list.
+ *
+ * The photo moves rather than copies. It is keyed by owner id, so the new record
+ * gets a fresh copy under its own id and the wish's is deleted with the wish —
+ * leaving one blob, not two, for the same picture.
+ *
+ * @returns {Promise<{collection:string, record:object}>}
+ */
+export async function fulfilWish(id) {
+  const wish = state.wishlist.find((w) => w.id === id);
+  if (!wish) throw new Error('That wish list entry no longer exists.');
+
+  const target = WISH_TARGETS[wish.category];
+  if (!target) throw new Error(`Nothing to move a "${wish.category}" entry into.`);
+
+  const record = await upsert(target.collection, {
+    ...target.build(wish),
+    tankId: wish.tankId,
+  });
+
+  if (wish.thumb) {
+    const rows = await db.getAll('photos');
+    const blob = rows.find((r) => r.id === wish.id);
+    if (blob) await db.put('photos', { ...blob, id: record.id });
+    await upsert(target.collection, { ...record, thumb: wish.thumb, hasPhoto: !!blob });
+  }
+
+  await deleteWish(wish.id);
+  return { collection: target.collection, record };
+}
+
+/* --- Notes ---------------------------------------------------------------- */
+
+/** Saving a note stamps `updatedAt`, which is what the list sorts on. */
+export function saveNote(record) {
+  return upsert('notes', { ...record, updatedAt: new Date().toISOString() });
+}
+
+export const deleteNote = (id) => drop('notes', id);
+
+/* --- Gallery -------------------------------------------------------------- */
+
+export const saveAlbum = (record) => upsert('albums', record);
+
+/**
+ * Deleting an album keeps its photos, which become unfiled. Losing a folder
+ * should not lose the pictures in it — that is what deleting the photos is for.
+ */
+export async function deleteAlbum(id) {
+  const inside = state.gallery.filter((p) => p.albumId === id);
+  if (inside.length) {
+    const unfiled = inside.map((p) => ({ ...p, albumId: null }));
+    await db.putMany('gallery', unfiled);
+    for (const row of unfiled) {
+      const i = state.gallery.findIndex((p) => p.id === row.id);
+      if (i >= 0) state.gallery[i] = row;
+    }
+  }
+  return drop('albums', id);
+}
+
+export const saveGalleryPhoto = (record) => upsert('gallery', record);
+
+export async function deleteGalleryPhoto(id) {
+  await db.remove('photos', id).catch(() => {});
+  return drop('gallery', id);
+}
+
 /** Deleting a task leaves its activity history in place as a record of the work. */
 export async function deleteTask(id) {
   const orphans = state.activities.filter((a) => a.taskId === id);
@@ -649,14 +838,20 @@ export function knownStores() {
    device — including it in the backup would push the file past what a phone can
    share. The originals remain in your photo library regardless.
 
-   Livestock, equipment and foods can each own a photo. Ids are UUIDs, so the
-   owner is found by looking rather than passed in, and every existing call site
-   keeps working unchanged. */
+   Livestock, equipment, foods, wish list entries and gallery photos can each
+   own a photo. Ids are UUIDs, so the owner is found by looking rather than
+   passed in, and every existing call site keeps working unchanged.
+
+   A gallery photo is the odd one out: for the others the photo decorates a
+   record that would exist anyway, while a gallery record exists only to hold
+   one. Same mechanism either way. */
 
 const PHOTO_OWNERS = [
   { collection: 'livestock', save: (r) => saveLivestock(r) },
   { collection: 'equipment', save: (r) => saveEquipment(r) },
   { collection: 'foods', save: (r) => saveFood(r) },
+  { collection: 'wishlist', save: (r) => saveWish(r) },
+  { collection: 'gallery', save: (r) => saveGalleryPhoto(r) },
 ];
 
 /** Every id that is allowed to have a stored photo, for orphan pruning. */
@@ -779,35 +974,26 @@ export function markBackedUp() {
 
 export const EXPORT_FORMAT = 1;
 
+/* Driven off COLLECTIONS rather than listed by hand, so a section added later
+   cannot be left out of the backup — which is the one mistake here that loses
+   data silently, and only for whoever restores months afterwards. */
 export function exportData() {
+  const data = { meta: [state.settings] };
+  const counts = {};
+
+  for (const name of COLLECTIONS) {
+    data[name] = state[name];
+    // `params` is configuration rather than log, and the counts line is a
+    // human-facing summary of what was captured.
+    if (name !== 'params') counts[name] = state[name].length;
+  }
+
   return {
     app: 'reef-log',
     formatVersion: EXPORT_FORMAT,
     exportedAt: new Date().toISOString(),
-    counts: {
-      tanks: state.tanks.length,
-      readings: state.readings.length,
-      livestock: state.livestock.length,
-      expenses: state.expenses.length,
-      equipment: state.equipment.length,
-      supplements: state.supplements.length,
-      foods: state.foods.length,
-      tasks: state.tasks.length,
-      activities: state.activities.length,
-    },
-    data: {
-      tanks: state.tanks,
-      params: state.params,
-      readings: state.readings,
-      livestock: state.livestock,
-      expenses: state.expenses,
-      equipment: state.equipment,
-      supplements: state.supplements,
-      foods: state.foods,
-      tasks: state.tasks,
-      activities: state.activities,
-      meta: [state.settings],
-    },
+    counts,
+    data,
   };
 }
 
@@ -833,22 +1019,15 @@ export async function importData(payload) {
   }
   if (!d.tanks.length) throw new Error('The backup contains no tanks.');
 
-  await db.replaceAll({
-    tanks: d.tanks,
-    params: d.params,
-    readings: d.readings || [],
-    livestock: d.livestock || [],
-    expenses: d.expenses || [],
-    equipment: d.equipment || [],
-    supplements: d.supplements || [],
-    foods: d.foods || [],
-    tasks: d.tasks || [],
-    activities: d.activities || [],
-    meta: d.meta || [],
-    // No photos key on purpose: backups carry thumbnails only, and replaceAll
-    // leaves stores it is not given alone, so stored full-size photos survive
-    // a restore. Orphans are pruned just below instead.
-  });
+  // Same COLLECTIONS-driven shape as the export. A backup written before a
+  // section existed simply has no key for it, and restores as empty.
+  const incoming = { meta: d.meta || [] };
+  for (const name of COLLECTIONS) incoming[name] = d[name] || [];
+
+  // No photos key on purpose: backups carry thumbnails only, and replaceAll
+  // leaves stores it is not given alone, so stored full-size photos survive a
+  // restore. Orphans are pruned just below instead.
+  await db.replaceAll(incoming);
 
   await init();
 
@@ -866,16 +1045,7 @@ export async function importData(payload) {
 /** Wipe everything and re-seed a fresh tank. */
 export async function resetAll() {
   await db.clearAll();
-  state.tanks = [];
-  state.params = [];
-  state.readings = [];
-  state.livestock = [];
-  state.expenses = [];
-  state.equipment = [];
-  state.supplements = [];
-  state.foods = [];
-  state.tasks = [];
-  state.activities = [];
+  for (const name of COLLECTIONS) state[name] = [];
   state.settings = { ...DEFAULT_SETTINGS, seededCollections: [] };
   await seed();
   emit();

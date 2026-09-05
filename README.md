@@ -103,6 +103,10 @@ release can add a whole new section — as Maintenance, Gear and Foods were — 
 browser that already holds the log, without touching what is there, and without a
 collection you empty on purpose being refilled on the next reload.
 
+Wish List, Notes and Gallery ship no starter content at all: they are yours to fill, and
+inventing entries for them would be putting words in your mouth rather than transcribing
+a workbook.
+
 Editing the starter entries in the app is safe; they are ordinary records once
 installed. To revise the shipped log, edit `js/seed-data.js`; a collection already
 present in a browser will not be replaced, so material changes to existing collections
@@ -140,6 +144,40 @@ Maintenance beside the water changes, feeds the red pip on the Care tab, and log
 same activity history. The Foods screen leads with anything due, and every schedule can
 be logged from the food's own card.
 
+### Wish List
+
+Things you want but have not bought — livestock, equipment, food, supplements — each
+with a photo, a price you expect, where you saw it and a one-to-five priority. Built for
+standing in the shop with a phone: the question there is whether this is the one you
+meant to get and what you were willing to pay.
+
+**I bought it** moves the entry into whichever section it actually belongs to. A fish
+becomes a Livestock entry, a pump becomes Gear, a tub becomes a Food — dated today, with
+the quantity, store, price, notes and photo carried across, and off the wish list. The
+photo moves rather than copies, so one picture never occupies two slots.
+
+### Notes
+
+Deliberately unstructured, because the rest of the app is fields. Paste the dosing
+instructions off the bottle, write down what the shop said about acclimating, record what
+you tried last time something went wrong. A note needs neither a title nor anything else
+— leave the title blank and the first line becomes it.
+
+Search runs across titles and bodies and highlights what matched, which is the only
+machinery here and the thing that makes a note worth writing.
+
+### Gallery
+
+Tank photos in albums. Add several at once; they are processed one at a time, because a
+phone asked to decode twenty full-size images simultaneously runs out of memory rather
+than going faster. Each photo takes its capture date from the file, and can carry a
+caption.
+
+An album is only a label. Photos can sit outside one, and deleting an album keeps
+everything in it — losing a folder should not lose the pictures. The header shows what
+the gallery is costing in storage, because this is the one section with no natural limit
+on how much you put in it.
+
 ### Expenses
 
 Itemised spending by category and store, with month / year-to-date / all-time totals, a
@@ -161,6 +199,18 @@ browser's site data will erase everything you have logged.
 
 If you later want the two devices to sync live, the storage layer is isolated behind
 `js/store.js`; a hosted backend can be added there without touching the views.
+
+### What a backup does and does not carry
+
+Every record, and the **thumbnail** of every photo — but not the full-size images, which
+stay on the device. Restoring on a second device therefore gives you a complete log whose
+pictures are thumbnail-quality. Full-size images are excluded on purpose: including them
+would push the file past what a phone can hand to iCloud or a mail app.
+
+Thumbnails are 320 px JPEGs carried inline as data URLs, roughly 20–30 KB each. That is
+invisible when a photo hangs off a fish or a pump, but the Gallery has no natural ceiling
+— a hundred photos there adds a couple of megabytes to the backup file. Still shareable;
+worth knowing before you put five hundred in.
 
 ---
 
@@ -206,8 +256,8 @@ js/
   ui.js                  formatting, modals, toasts, escaping
   food-icons.js          drawn symbols and type list for foods
   views/                 one module per screen: dashboard, parameters,
-                         maintenance, livestock, gear, foods, expenses,
-                         settings
+                         maintenance, livestock, gear, foods, wishlist,
+                         notes, gallery, expenses, settings
 icons/                   app icons
 ```
 
